@@ -1,21 +1,19 @@
 import React from "react";
+import Triumph from './Triumph.js'
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hello: "" }
-  }
-
-  componentDidMount() {
-    fetch("http://localhost:8000/")
-      .then(res => res.text())
-      .then(res => this.setState({ hello: res }));
   }
 
   render() {
     return (
-      <div>
-        <h1>{this.state.hello}</h1>
+      <div className="Playground">
+        <Triumph
+          name="NAME"
+          iconPath="https://www.bungie.net/common/destiny2_content/icons/cef32825c1da6ed5db3ed84e69c4bb60.png"
+          description="Description"
+        />
       </div>
     );
   }

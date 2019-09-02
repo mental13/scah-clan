@@ -1,0 +1,44 @@
+.Triumph {
+  display: flex;
+  flex-direction: column;
+  background-color: darkgrey;
+  min-width: 200px;
+  max-width: 400px;
+  box-shadow: inset 0 0 0 2px white;
+}
+
+.InfoContainer {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  grid-template-rows: minmax(35px, 35px) minmax(55px, auto)
+}
+
+.InfoContainer .Icon {
+  grid-column: 1;
+  grid-row: 1/2;
+  padding: 8px 0 0 8px;
+}
+
+.InfoContainer .Name {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 8px 8px 0 8px;
+}
+
+.InfoContainer .Description {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 8px 0 0 8px;
+  margin: 0 8px 0 0;
+  border-top: 1px solid white;
+}
+
+.ObjectiveContainer {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 8px 4px 8px;
+}
+
+.ObjectiveListItem {
+  padding: 4px 0 4px 0;
+}

@@ -1,0 +1,68 @@
+.Objective {
+  display: flex;
+  min-width: 100px;
+  max-width: 400px;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.Checkbox {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  background-color: rgba(0, 0, 0, 0.1);
+  min-width: 20px;
+  max-width: 20px;
+  height: 20px;
+  flex: 1;
+  margin: 0 8px 0 0;
+  position: relative;
+}
+
+.Objective .Checkbox::before {
+  content: ' ';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  margin: 2px;
+  background-color: transparent;
+}
+
+.Objective .Checkbox[complete="true"]::before {
+  background-color: green;
+}
+
+.ProgressBar {
+  flex: 9;
+  height: 20px;
+  position: relative;
+}
+
+.ProgressContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ProgressContainer .Hint {
+  flex: 1 1 auto;
+  padding: 0 0 0 8px;
+  z-index: 2;
+}
+
+.ProgressContainer .Progress {
+  flex: 1 0 auto;
+  text-align: right;
+  padding: 0 8px 0 0;
+  z-index: 2;
+}
+
+.ProgressBar .Fill {
+  background-color: green;
+  position: absolute;
+  background-clip: content-box;
+  top: 0;
+  left: 0;
+  height: calc(100% - 4px);
+  margin: 2px 0 2px 0;
+}
