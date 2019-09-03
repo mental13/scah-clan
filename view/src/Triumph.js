@@ -12,22 +12,16 @@ class Triumph extends React.Component {
           <div className="Name"><b>{this.props.name}</b></div>
           <div className="Description">{this.props.description}</div>
         </div>
-        {/* TODO pass list of Objectives as props */}
         <ul className="ObjectiveContainer">
-          <li className="ObjectiveListItem">
-            <Objective
-              curValue="42"
-              reqValue="50"
-              hint="Hint"
-            />
-          </li>
-          <li className="ObjectiveListItem">
-            <Objective
-              curValue="42"
-              reqValue="40"
-              hint="Hint"
-            />
-          </li>
+          {this.props.objectives.map((obj, index) => (
+            <li key={index} className="ObjectiveListItem">
+              <Objective
+                curValue={obj.curValue}
+                reqValue={obj.reqValue}
+                hint={obj.hint}
+              />
+            </li>
+          ))}
         </ul>
       </div>
     );

@@ -7,6 +7,16 @@ const ErrorCode = {
   UNAVAILABLE: 5
 }
 
+const RecordStatus = {
+  COMPLETED: 1,
+  NOT_COMPLETED: 4
+}
+
+const CollectibleStatus = {
+  ACQUIRED: 0,
+  NOT_ACQUIRED: 1
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -21,7 +31,7 @@ class App extends React.Component {
   componentDidMount() {
     const apiKey = process.env.BUNGIE_API_KEY;
     fetch('https://www.bungie.net/Platform//Destiny2/4/Profile/4611686018475932772/?components=800,900',
-      { method: 'GET', headers: { 'x-api-key': apiKey} })
+      { method: 'GET', headers: { 'x-api-key': apiKey } })
       .then(response => response.json())
       .then(data => {
         if (data.ErrorCode != ErrorCode.SUCCESS) {
@@ -38,21 +48,30 @@ class App extends React.Component {
       });
   }
 
-  getTriumphTest() {
-    return this.state.profileRecords ? this.state.profileRecords[2602370549].state : "NO RECORD";
+  getRecordState(id) {
+    return this.state.profileRecords ? this.state.profileRecords[id].state & RecordStatus.COMPLETED : RecordStatus.NOT_COMPLETED;
   }
 
-  getCollectibleTest() {
-    return this.state.profileCollectibles ? this.state.profileCollectibles[1660030044].state : "NO COLLECTIBLE";
+  getCollectibleState(id) {
+    return this.state.profileCollectibles ? this.state.profileCollectibles[id].state : CollectibleStatus.NOT_ACQUIRED;
+  }
+
+  getCompletedRecordCount(recordIds) {
+    return recordIds.filter(recordId => this.getRecordState(recordId) == RecordStatus.COMPLETED).length;
   }
 
   render() {
     return (
       <div className="Playground">
         <Triumph
-          name="NAME"
-          iconPath="https://www.bungie.net/common/destiny2_content/icons/cef32825c1da6ed5db3ed84e69c4bb60.png"
-          description="Description"
+          name="Last Wish"
+          iconPath="https://www.bungie.net/common/destiny2_content/icons/fc5791eb2406bf5e6b361f3d16596693.png"
+          description="Complete the Last Wish raid with clanmates and overcome challenges."
+          objectives={[
+            { hint: "Raid Completed", curValue: this.getCompletedRecordCount([2195455623]), reqValue: 1 },
+            { hint: "Raid with Clanmates", curValue: this.getCompletedRecordCount([613834558]), reqValue: 1 },
+            { hint: "Challenges Completed", curValue: this.getCompletedRecordCount([2822000740, 3899933775, 2196415799, 1672792871, 149192209]), reqValue: 5 }
+          ]}
         />
       </div>
     );
