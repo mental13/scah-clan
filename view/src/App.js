@@ -1,6 +1,12 @@
 import React from "react";
 import Triumph from './Triumph.js'
 
+const ErrorCode = {
+  NONE: 0,
+  SUCCESS: 1,
+  UNAVAILABLE: 5
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -18,6 +24,11 @@ class App extends React.Component {
       { method: 'GET', headers: { 'x-api-key': apiKey} })
       .then(response => response.json())
       .then(data => {
+        if (data.ErrorCode != ErrorCode.SUCCESS) {
+          console.log(data.Message);
+          return;
+        }
+
         this.setState({
           triumphScore: data.Response.profileRecords.data.score,
           profileCollectibles: data.Response.profileCollectibles.data.collectibles,
