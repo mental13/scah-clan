@@ -19,6 +19,7 @@ class Triumph extends React.Component {
                 curValue={obj.curValue}
                 reqValue={obj.reqValue}
                 hint={obj.hint}
+                collectionProgress={obj.collectionProgress}
               />
             </li>
           ))}

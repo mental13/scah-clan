@@ -12,18 +12,31 @@ class Objective extends React.Component {
   }
 
   render() {
-    return (
-      <div className="Objective">
-        <div className="Checkbox" complete={this.isComplete()}></div>
-        <div className="ProgressBar">
-          <div className="ProgressContainer">
-            <div className="Hint">{this.props.hint}</div>
-            <div className="Progress">{this.props.curValue}/{this.props.reqValue}</div>
-          </div>
-          <div className="Fill" style={{width: this.getProgressPercent() + "%"}}></div>
+    if (this.props.collectionProgress)
+      return (
+        <div className="Objective" type="collection">
+          <ul className="CollectibleContainer">
+          {this.props.collectionProgress.map((collectible, index) => (
+            <li key={index} className="CollectibleListItem">
+              <div className="Collectible" aquired={collectible.isAquired.toString()}><img src={collectible.icon} alt="" /></div>
+            </li>
+          ))}
+        </ul>
         </div>
-      </div>
-    );
+      );
+    else
+      return (
+        <div className="Objective" type="progress">
+          <div className="Checkbox" complete={this.isComplete()}></div>
+          <div className="ProgressBar">
+            <div className="ProgressContainer">
+              <div className="Hint">{this.props.hint}</div>
+              <div className="Progress">{this.props.curValue}/{this.props.reqValue}</div>
+            </div>
+            <div className="Fill" style={{ width: this.getProgressPercent() + "%" }}></div>
+          </div>
+        </div>
+      );
   }
 }
 
