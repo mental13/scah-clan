@@ -31,7 +31,7 @@ class Profile extends React.Component {
       return (
         <ul className="TitleContainer">
           {this.state.roles.map((role, index) => (
-            <li key={index} className="TitleListItem">
+            <li key={role.name + index.toString()} className="TitleListItem">
               <Title
                 role={role}
               />

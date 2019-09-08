@@ -10,14 +10,12 @@ class Title extends React.Component {
         <div className='TitleName'>{this.props.role.name}</div>
         <ul className='TriumphContainer'>
           {this.props.role.triumphs.map((triumph, index) => (
-            <li key={index} className="TriumphListItem">
+            <li key={triumph.name + index.toString()} className="TriumphListItem">
             <Triumph
               name={triumph.name}
               iconPath={triumph.icon}
               description={triumph.description}
-              objectives={[
-                { hint: triumph.objectives[0].hint, curValue: triumph.objectives[0].curValue, reqValue: triumph.objectives[0].reqValue },
-              ]}
+              objectives={triumph.objectives}
             />
             </li>
           ))}

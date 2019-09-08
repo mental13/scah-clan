@@ -14,7 +14,7 @@ class Triumph extends React.Component {
         </div>
         <ul className="ObjectiveContainer">
           {this.props.objectives.map((obj, index) => (
-            <li key={index} className="ObjectiveListItem">
+            <li key={obj.hint + index.toString()} className="ObjectiveListItem">
               <Objective
                 curValue={obj.curValue}
                 reqValue={obj.reqValue}
