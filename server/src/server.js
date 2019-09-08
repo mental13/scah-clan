@@ -17,17 +17,11 @@ const ErrorCode = {
   UNAVAILABLE: 5
 }
 
-// TODO figure out how to store this and the refresh token
-var ACCESS_TOKEN = '';
+var accessMap = {};
 
 app.use(cors());
 
-app.get("/", (req, res) => {
-  res.status(200).send("Hello World!");
-});
-
 app.get("/oauth", (req, res) => {
-  console.log('Start auth');
   const clientId = process.env.ClIENT_ID;
   // TODO generate state and check it on response
   res.send(`https://www.bungie.net/en/OAuth/Authorize?client_id=${clientId}&response_type=code&state=12345678`);
@@ -46,11 +40,12 @@ app.get("/oauth/redirect", (req, res) => {
     })
     .then(response => response.json())
     .then(data => {
-      ACCESS_TOKEN = data.access_token;
+      const accessToken = data.access_token;
       fetch(`https://www.bungie.net/Platform/User/GetMembershipsById/${data.membership_id}/254/`,
         { method: 'GET', headers: { 'x-api-key': process.env.BUNGIE_API_KEY } })
         .then(response => response.json())
         .then(data => {
+          accessMap[data.Response.destinyMemberships[0].membershipId] = accessToken;
           res.redirect(`${REACT_APP_URL}/profile/${data.Response.destinyMemberships[0].membershipId}`);
         })
     })
@@ -68,12 +63,19 @@ app.get("/destiny/:profileId", (req, res) => {
   // 700 - presentation nodes (seals)
   // 800 - collectibles
   // 900 - triumphs
+  const accessToken = accessMap[req.params.profileId];
+
+  if (!accessToken) {
+    res.status(403).json({'errorMessage': 'Bad Auth'});
+    return;
+  }
+
   fetch(`https://www.bungie.net/Platform//Destiny2/4/Profile/${req.params.profileId}/?components=100,102,200,201,202,205,300,700,800,900`,
     {
       method: 'GET',
       headers: {
         'x-api-key': process.env.BUNGIE_API_KEY,
-        'Authorization': `Bearer ${ACCESS_TOKEN}`
+        'Authorization': `Bearer ${accessToken}`
       }
     })
     .then(response => response.json())

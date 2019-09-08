@@ -20,6 +20,7 @@ class Profile extends React.Component {
         if (data.errorMessage) {
           // TODO indicate error to user
           console.log(data.errorMessage);
+          this.props.history.push('/')
           return;
         }
         this.setState({ roles: data.roles })
