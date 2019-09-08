@@ -1,0 +1,15 @@
+.TitleName {
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+.TriumphContainer {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 8px 4px 8px;
+}
+
+.TriumphListItem {
+  float: left;
+  padding: 4px;
+}

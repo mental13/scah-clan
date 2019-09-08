@@ -1,5 +1,7 @@
 import React from "react";
-import Triumph from "./Triumph.js"
+import './Profile.css';
+
+import Title from "./Title.js"
 
 import { SERVER_URL } from './constants.js';
 
@@ -27,19 +29,15 @@ class Profile extends React.Component {
   render() {
     if (this.state.roles) {
       return (
-        <div>
-          <p>{this.state.roles[0].name}</p>
-          {this.state.roles[0].triumphs.map((triumph, index) => (
-            <Triumph
-              name={triumph.name}
-              iconPath={triumph.icon}
-              description={triumph.description}
-              objectives={[
-                { hint: triumph.objectives[0].hint, curValue: triumph.objectives[0].curValue, reqValue: triumph.objectives[0].reqValue },
-              ]}
-            />
+        <ul className="TitleContainer">
+          {this.state.roles.map((role, index) => (
+            <li key={index} className="TitleListItem">
+              <Title
+                role={role}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       );
     }
     else {
