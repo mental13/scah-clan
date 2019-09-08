@@ -127,7 +127,7 @@ exports.parseChosen = function (destinyData) {
 
   let lChallengesCompleted = 0;
   lChallengeEmblemIds.forEach(collectibleId => {
-    if (destinyData.profileCollectibles.data.collectibles[collectibleId].state & CollectibleStatus.ACQUIRED)
+    if (!(destinyData.profileCollectibles.data.collectibles[collectibleId].state & CollectibleStatus.NOT_ACQUIRED))
       lChallengesCompleted++;
   });
 
@@ -214,8 +214,8 @@ exports.parseChosen = function (destinyData) {
 
   const sotpClanObjective = {
     hint: 'Raid with Clanmates',
-    isComplete: destinyData.profileRecords.data.records[2648109757].state & RecordStatus.COMPLETED,
-    curValue: destinyData.profileRecords.data.records[2648109757].state & RecordStatus.COMPLETED ? 1 : 0,
+    isComplete: destinyData.profileRecords.data.records[3758103712].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[3758103712].state & RecordStatus.COMPLETED ? 1 : 0,
     reqValue: 1
   }
 
