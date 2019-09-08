@@ -460,7 +460,7 @@ exports.parseConqueror = function (destinyData) {
       {
         name: 'Exotic Weapons',
         description: 'Aquire weapons',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/d8d537d629a8ab00aa2bd48a74084a69.png',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/f0a13943dfd6f1bffd8f88e82381db8a.png',
         isComplete: collectionObjective.isComplete,
         objectives: [
           exoticObjective
@@ -560,7 +560,7 @@ exports.parseOutlaw = function (destinyData) {
       {
         name: 'Exotic Weapons',
         description: 'Aquire weapons',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/d8d537d629a8ab00aa2bd48a74084a69.png',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/f0a13943dfd6f1bffd8f88e82381db8a.png',
         isComplete: collectionObjective.isComplete,
         objectives: [
           exoticObjective
