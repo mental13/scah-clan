@@ -83,7 +83,12 @@ app.get("/destiny/:profileId", (req, res) => {
       }
 
       let roleDefinitions = [];
+      //roleDefinitions.push(destiny.parseAscendant(data.Response)); // TODO parse inventorie and calculate power
       roleDefinitions.push(destiny.parseTriumphant(data.Response));
+      roleDefinitions.push(destiny.parseChosen(data.Response));
+      roleDefinitions.push(destiny.parseConqueror(data.Response)); // TODO collectibles
+      roleDefinitions.push(destiny.parseOutlaw(data.Response)); // TODO collectibles
+      roleDefinitions.push(destiny.parseVanquisher(data.Response)); // TODO collectibles
 
       res.status(200).json({
         'roles': roleDefinitions

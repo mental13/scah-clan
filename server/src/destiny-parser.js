@@ -15,7 +15,17 @@ var exports = module.exports = {};
 //    reqValue: required value
 //    collectionProgress: contains a list of items and their state
 
-exports.parseTriumphant = function(destinyData) {
+const RecordStatus = {
+  COMPLETED: 1,
+  NOT_COMPLETED: 4
+}
+
+const CollectibleStatus = {
+  ACQUIRED: 0,
+  NOT_ACQUIRED: 1
+}
+
+exports.parseTriumphant = function (destinyData) {
   const triumphScore = destinyData.profileRecords.data.score;
   const profileSealsIds = [
     3170835069, // Shadow
@@ -36,7 +46,6 @@ exports.parseTriumphant = function(destinyData) {
 
   let sealsCompleted = 0;
   profileSealsIds.forEach(sealId => {
-    console.log(sealId)
     const sealNode = destinyData.profilePresentationNodes.data.nodes[sealId];
 
     if (sealNode.progressValue >= sealNode.completionValue)
@@ -44,7 +53,6 @@ exports.parseTriumphant = function(destinyData) {
   });
 
   charSealsIds.forEach(sealId => {
-    console.log(sealId)
     const sealNode = destinyData.characterPresentationNodes.data[charId].nodes[sealId];
 
     // temp workaround
@@ -55,14 +63,14 @@ exports.parseTriumphant = function(destinyData) {
       sealsCompleted++;
   });
 
-  const objective_1 = {
+  const scoreObjective = {
     hint: 'Score',
     isComplete: triumphScore >= 80000,
     curValue: triumphScore,
     reqValue: 80000
   }
 
-  const objective_2 = {
+  const sealObjective = {
     hint: 'Seals',
     isComplete: sealsCompleted >= 3,
     curValue: sealsCompleted,
@@ -76,20 +84,397 @@ exports.parseTriumphant = function(destinyData) {
         name: 'Score',
         description: 'Score',
         icon: 'https://www.bungie.net/common/destiny2_content/icons/3b023bac8a0959be3c0791ecbcf3c5ec.png',
-        isComplete: objective_1.isComplete,
+        isComplete: scoreObjective.isComplete,
         objectives: [
-          objective_1
+          scoreObjective
         ]
       },
       {
         name: 'Seals',
         description: 'Seals',
         icon: 'https://www.bungie.net/common/destiny2_content/icons/23599621d4c63076c647384028d96ca4.png',
-        isComplete: objective_2.isComplete,
+        isComplete: sealObjective.isComplete,
         objectives: [
-          objective_2
+          sealObjective
         ]
       }
+    ]
+  }
+}
+
+exports.parseChosen = function (destinyData) {
+  // Leviathan
+  const lCompleteObjective = {
+    hint: 'Raid Completed',
+    isComplete: destinyData.profileRecords.data.records[3420353827].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[3420353827].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const lPrestigeObjective = {
+    hint: 'Prestige Completed',
+    isComplete: destinyData.profileRecords.data.records[940998165].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[940998165].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const lChallengeEmblemIds = [
+    1766893932,
+    1766893933,
+    1766893934,
+    1766893935
+  ];
+
+  let lChallengesCompleted = 0;
+  lChallengeEmblemIds.forEach(collectibleId => {
+    if (destinyData.profileCollectibles.data.collectibles[collectibleId].state & CollectibleStatus.ACQUIRED)
+      lChallengesCompleted++;
+  });
+
+  const lChallengeObjective = {
+    hint: 'Challenges Completed',
+    isComplete: lChallengesCompleted >= 4,
+    curValue: lChallengesCompleted,
+    reqValue: 4
+  }
+
+  // Eater of Worlds
+  const eowCompleteObjective = {
+    hint: 'Raid Completed',
+    isComplete: destinyData.profileRecords.data.records[2602370549].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[2602370549].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const eowPrestigeObjective = {
+    hint: 'Prestige Completed',
+    isComplete: destinyData.profileRecords.data.records[3861076347].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[3861076347].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  // Spire if Stars
+  const sosCompleteObjective = {
+    hint: 'Raid Completed',
+    isComplete: destinyData.profileRecords.data.records[1742345588].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[1742345588].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const sosPrestigeObjective = {
+    hint: 'Prestige Completed',
+    isComplete: destinyData.profileRecords.data.records[2923250426].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[2923250426].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  // Last Wish
+  const lwCompleteObjective = {
+    hint: 'Raid Completed',
+    isComplete: destinyData.profileRecords.data.records[2195455623].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[2195455623].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const lwClanObjective = {
+    hint: 'Raid with Clanmates',
+    isComplete: destinyData.profileRecords.data.records[613834558].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[613834558].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const lwChallengeIds = [
+    2822000740,
+    3899933775,
+    2196415799,
+    1672792871,
+    149192209
+  ];
+
+  let lwChallengesCompleted = 0;
+  lwChallengeIds.forEach(recordId => {
+    if (destinyData.profileRecords.data.records[recordId].state & RecordStatus.COMPLETED)
+      lwChallengesCompleted++;
+  });
+
+  const lwChallengeObjective = {
+    hint: 'Challenges Completed',
+    isComplete: lwChallengesCompleted >= 5,
+    curValue: lwChallengesCompleted,
+    reqValue: 5
+  }
+
+  // Scourge of the Past
+  const sotpCompleteObjective = {
+    hint: 'Raid Completed',
+    isComplete: destinyData.profileRecords.data.records[4060320345].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[4060320345].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const sotpClanObjective = {
+    hint: 'Raid with Clanmates',
+    isComplete: destinyData.profileRecords.data.records[2648109757].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[2648109757].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const sotpChallengeIds = [
+    4162926221,
+    1428463716,
+    1804999028
+  ];
+
+  let sotpChallengesCompleted = 0;
+  sotpChallengeIds.forEach(recordId => {
+    if (destinyData.profileRecords.data.records[recordId].state & RecordStatus.COMPLETED)
+      sotpChallengesCompleted++;
+  });
+
+  const sotpChallengeObjective = {
+    hint: 'Challenges Completed',
+    isComplete: sotpChallengesCompleted >= 3,
+    curValue: sotpChallengesCompleted,
+    reqValue: 3
+  }
+
+  // Crown of Sorrows
+  const cosCompleteObjective = {
+    hint: 'Raid Completed',
+    isComplete: destinyData.profileRecords.data.records[1558682421].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[1558682421].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const cosClanObjective = {
+    hint: 'Raid with Clanmates',
+    isComplete: destinyData.profileRecords.data.records[1558682423].state & RecordStatus.COMPLETED,
+    curValue: destinyData.profileRecords.data.records[1558682423].state & RecordStatus.COMPLETED ? 1 : 0,
+    reqValue: 1
+  }
+
+  const cosChallengeIds = [
+    1575460002,
+    1575460003,
+    1575460004
+  ];
+
+  let cosChallengesCompleted = 0;
+  cosChallengeIds.forEach(recordId => {
+    if (destinyData.profileRecords.data.records[recordId].state & RecordStatus.COMPLETED)
+      cosChallengesCompleted++;
+  });
+
+  const cosChallengeObjective = {
+    hint: 'Challenges Completed',
+    isComplete: cosChallengesCompleted >= 3,
+    curValue: cosChallengesCompleted,
+    reqValue: 3
+  }
+
+  // Garden of Salvation - SOON
+
+  return {
+    name: 'Chosen',
+    triumphs: [
+      {
+        name: 'Last Wish',
+        description: 'Last Wish',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/fc5791eb2406bf5e6b361f3d16596693.png',
+        isComplete: lwCompleteObjective.isComplete && lwClanObjective.isComplete && lwChallengeObjective.isComplete,
+        objectives: [
+          lwCompleteObjective,
+          lwClanObjective,
+          lwChallengeObjective
+        ]
+      },
+      {
+        name: 'Scourge of the Past',
+        description: 'Scourge of the Past',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/8b1bfd1c1ce1cab51d23c78235a6e067.png',
+        isComplete: sotpCompleteObjective.isComplete && sotpClanObjective.isComplete && sotpChallengeObjective.isComplete,
+        objectives: [
+          sotpCompleteObjective,
+          sotpClanObjective,
+          sotpChallengeObjective
+        ]
+      },
+      {
+        name: 'Crown of Sorrows',
+        description: 'Crown of Sorrows',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/decaf52ed74c6e66ae363fea24af2ba2.png',
+        isComplete: cosCompleteObjective.isComplete && cosClanObjective.isComplete && cosChallengeObjective.isComplete,
+        objectives: [
+          cosCompleteObjective,
+          cosClanObjective,
+          cosChallengeObjective
+        ]
+      },
+      {
+        name: 'Leviathan',
+        description: 'Leviathan',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
+        isComplete: lCompleteObjective.isComplete && lPrestigeObjective.isComplete && lChallengeObjective.isComplete,
+        objectives: [
+          lCompleteObjective,
+          lPrestigeObjective,
+          lChallengeObjective
+        ]
+      },
+      {
+        name: 'Eater of Worlds',
+        description: 'Eater of Worlds',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
+        isComplete: eowCompleteObjective.isComplete && eowPrestigeObjective.isComplete,
+        objectives: [
+          eowCompleteObjective,
+          eowPrestigeObjective
+        ]
+      },
+      {
+        name: 'Spire of Stars',
+        description: 'Spire of Stars',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
+        isComplete: sosCompleteObjective.isComplete && sosPrestigeObjective.isComplete,
+        objectives: [
+          sosCompleteObjective,
+          sosPrestigeObjective
+        ]
+      }
+    ]
+  }
+}
+
+exports.parseConqueror = function (destinyData) {
+  const charId = destinyData.profile.data.characterIds[0];
+  const seasonResets = destinyData.characterProgressions.data[charId].progressions[3882308435].seasonResets;
+  const resetObjective = {
+    hint: 'Resets',
+    isComplete: seasonResets[seasonResets.length - 1].resets >= 3,
+    curValue: seasonResets[seasonResets.length - 1].resets,
+    reqValue: 3
+  }
+
+  return {
+    name: 'Conqueror',
+    triumphs: [
+      {
+        name: 'Valor Rank',
+        description: 'Reset your Valor Rank 3 times in the active season',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/71c0b0cc81c1e92ce675c295a4a8e347.png',
+        isComplete: resetObjective.isComplete,
+        objectives: [
+          resetObjective
+        ]
+      },
+    ]
+  }
+}
+
+exports.parseOutlaw = function (destinyData) {
+  const charId = destinyData.profile.data.characterIds[0];
+  const seasonResets = destinyData.characterProgressions.data[charId].progressions[2772425241].seasonResets;
+  const resetObjective = {
+    hint: 'Resets',
+    isComplete: seasonResets[seasonResets.length - 1].resets >= 1,
+    curValue: seasonResets[seasonResets.length - 1].resets,
+    reqValue: 1
+  }
+
+  return {
+    name: 'Outlaw',
+    triumphs: [
+      {
+        name: 'Infamy Rank',
+        description: 'Reset your Infamy Rank in the active season',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/fc31e8ede7cc15908d6e2dfac25d78ff.png',
+        isComplete: resetObjective.isComplete,
+        objectives: [
+          resetObjective
+        ]
+      },
+    ]
+  }
+}
+
+exports.parseVanquisher = function (destinyData) {
+  const charId = destinyData.profile.data.characterIds[0];
+
+  const nfIds = [
+    3399168111,
+    1329556468,
+    3951275509,
+    3450793480,
+    2836924866,
+    1060780635,
+    3973165904,
+    1526865549,
+    3340846443,
+    2282894388,
+    2692332187,
+    2099501667,
+    1039797865,
+    165166474
+  ];
+
+  let nfRank = 0;
+  nfIds.forEach(recordId => {
+    const nfRecord = destinyData.characterRecords.data[charId].records[recordId];
+    if (nfRecord.state & RecordStatus.COMPLETED)
+    nfRank += nfRecord.objectives[0].progress;
+  });
+  nfRank = Math.round(nfRank / 100000 - 0.5);
+
+  const rankObjective = {
+    hint: 'Rank',
+    isComplete: nfRank >= 20,
+    curValue: nfRank,
+    reqValue: 20
+  }
+
+  const nfChallengeIds = [
+    599303591,
+    413743786,
+    3847579126,
+    3641166665,
+    1142177491,
+    1469598452,
+    2140068897,
+    1498229894,
+    4267516859,
+    1442950315,
+    1398454187,
+    3636866482,
+    1871570556,
+    3013611925
+  ];
+
+  let nfChallengesCompleted = 0;
+  nfChallengeIds.forEach(recordId => {
+    if (destinyData.characterRecords.data[charId].records[recordId].state & RecordStatus.COMPLETED)
+    nfChallengesCompleted++;
+  });
+
+  const challengeObjective = {
+    hint: 'Challenges Completed',
+    isComplete: nfChallengesCompleted >= 10,
+    curValue: nfChallengesCompleted,
+    reqValue: 10
+  }
+
+  return {
+    name: 'Vanquisher',
+    triumphs: [
+      {
+        name: 'Nightfalls',
+        description: 'Achieve a high Nightfall rank and complete challenges',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/1538509805dda202c0d14771fe4f6d20.png',
+        isComplete: rankObjective.isComplete && challengeObjective.isComplete,
+        objectives: [
+          rankObjective,
+          challengeObjective
+        ]
+      },
     ]
   }
 }
