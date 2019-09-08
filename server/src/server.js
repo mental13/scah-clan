@@ -6,6 +6,7 @@ const port = process.env.PORT || "8000";
 
 const dotenv = require("dotenv").config();
 const fetch = require("node-fetch");
+const destiny = require("./destiny-parser")
 
 // Constants
 const REACT_APP_URL = 'http://localhost:1234';
@@ -59,15 +60,15 @@ app.get("/destiny/:profileId", (req, res) => {
   // Components:
   // 100 - profile data (character IDs)
   // 102 - profile inventorie (vault)
+  // 200 - character info
   // 201 - character inventorie
   // 202 - character progression (season resets)
   // 205 - character equipment
   // 300 - basic instanced item info
-  // 305 - instanced item perk info
   // 700 - presentation nodes (seals)
   // 800 - collectibles
   // 900 - triumphs
-  fetch(`https://www.bungie.net/Platform//Destiny2/4/Profile/${req.params.profileId}/?components=100,102,201,202,205,300,305,700,800,900`,
+  fetch(`https://www.bungie.net/Platform//Destiny2/4/Profile/${req.params.profileId}/?components=100,102,200,201,202,205,300,700,800,900`,
     {
       method: 'GET',
       headers: {
@@ -81,10 +82,11 @@ app.get("/destiny/:profileId", (req, res) => {
         res.status(400).json({ 'errorMessage': data.Message });
       }
 
+      let roleDefinitions = [];
+      roleDefinitions.push(destiny.parseTriumphant(data.Response));
+
       res.status(200).json({
-        'profileCollectibles': data.Response.profileCollectibles.data.collectibles,
-        'profileRecords': data.Response.profileRecords.data.records,
-        'charRecords': data.Response.profileRecords.data,
+        'roles': roleDefinitions
       });
     });
 });
