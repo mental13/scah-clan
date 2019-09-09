@@ -1,15 +1,13 @@
 const express = require("express");
-
-const app = express();
+const path = require('path');
 const cors = require("cors");
-const port = process.env.PORT || "8000";
 
 const dotenv = require("dotenv").config();
 const fetch = require("node-fetch");
 const destiny = require("./destiny-parser")
 
-// Constants
-const REACT_APP_URL = 'http://localhost:3000';
+const app = express();
+const port = process.env.PORT || "8000";
 
 const ErrorCode = {
   NONE: 0,
@@ -20,6 +18,23 @@ const ErrorCode = {
 var accessMap = {};
 
 app.use(cors());
+
+if (process.env.NODE_ENV === 'production') {
+  var REACT_APP_URL = '';
+
+  app.use(express.static(path.join(__dirname, '..', '..', 'view', 'build')));
+
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', '..', 'view', 'build', 'index.html'));
+  });
+
+  app.get('/profile/:profileId', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', '..', 'view', 'build', 'index.html'));
+  });
+}
+else {
+  var REACT_APP_URL = 'http://localhost:3000';
+}
 
 app.get("/oauth", (req, res) => {
   const clientId = process.env.ClIENT_ID;
@@ -66,7 +81,7 @@ app.get("/destiny/:profileId", (req, res) => {
   const accessToken = accessMap[req.params.profileId];
 
   if (!accessToken) {
-    res.status(403).json({'errorMessage': 'Bad Auth'});
+    res.status(403).json({ 'errorMessage': 'Bad Auth' });
     return;
   }
 
@@ -88,9 +103,9 @@ app.get("/destiny/:profileId", (req, res) => {
       //roleDefinitions.push(destiny.parseAscendant(data.Response)); // TODO parse inventorie and calculate power
       roleDefinitions.push(destiny.parseTriumphant(data.Response));
       roleDefinitions.push(destiny.parseChosen(data.Response));
-      roleDefinitions.push(destiny.parseConqueror(data.Response)); // TODO collectibles
-      roleDefinitions.push(destiny.parseOutlaw(data.Response)); // TODO collectibles
-      roleDefinitions.push(destiny.parseVanquisher(data.Response)); // TODO collectibles
+      roleDefinitions.push(destiny.parseConqueror(data.Response));
+      roleDefinitions.push(destiny.parseOutlaw(data.Response));
+      roleDefinitions.push(destiny.parseVanquisher(data.Response));
 
       res.status(200).json({
         'roles': roleDefinitions
