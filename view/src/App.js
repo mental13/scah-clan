@@ -1,7 +1,5 @@
 import React from "react";
 
-import { SERVER_URL } from './constants.js';
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -11,8 +9,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    const apiKey = process.env.BUNGIE_API_KEY;
-    fetch(`${SERVER_URL}/oauth`)
+    fetch('/oauth')
       .then(response => response.text())
       .then(data => this.setState({ oauthUrl: data }));
   }

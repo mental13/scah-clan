@@ -9,7 +9,7 @@ const fetch = require("node-fetch");
 const destiny = require("./destiny-parser")
 
 // Constants
-const REACT_APP_URL = 'http://localhost:1234';
+const REACT_APP_URL = 'http://localhost:3000';
 
 const ErrorCode = {
   NONE: 0,

@@ -15,6 +15,7 @@
 
 .InfoContainer .Icon {
   grid-column: 1;
+  margin: 4px;
   width: 90px;
   height: 90px;
   position: relative;
@@ -23,8 +24,6 @@
 .InfoContainer .Icon img{
   object-fit: fill;
   position: absolute;
-  top: 4;
-  left: 4;
   width: calc(100% - 8px);
   height: calc(100% - 8px);
 }

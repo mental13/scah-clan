@@ -3,8 +3,6 @@ import './Profile.css';
 
 import Title from "./Title.js"
 
-import { SERVER_URL } from './constants.js';
-
 class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -14,7 +12,7 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`${SERVER_URL}/destiny/${this.props.match.params.profileId}`)
+    fetch(`/destiny/${this.props.match.params.profileId}`)
       .then(response => response.json())
       .then(data => {
         if (data.errorMessage) {

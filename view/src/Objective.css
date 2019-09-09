@@ -90,8 +90,6 @@
 .CollectibleListItem .Collectible img{
   object-fit: scale-down;
   position: absolute;
-  top: 4;
-  left: 4;
   width: calc(100% - 8px);
   height: calc(100% - 8px);
 }
@@ -99,8 +97,6 @@
 .CollectibleListItem .Collectible::before {
   content: ' ';
   position: absolute;
-  top: 4;
-  left: 4;
   width: calc(100% - 8px);
   height: calc(100% - 8px);
   background-color: black;

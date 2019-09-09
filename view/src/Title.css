@@ -11,8 +11,7 @@
   overflow: hidden;
   grid-template-columns: repeat(auto-fill, 400px);
   grid-auto-rows: auto;
-  grid-column-gap: 5px;
-  grid-row-gap: 5px;
+  grid-column-gap: 8px;
 }
 
 .TriumphListItem {
