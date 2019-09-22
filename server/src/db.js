@@ -35,13 +35,15 @@ exports.addTitleForProfile = function (profileID, title) {
 exports.getTitlesForProfile = async function (profileID) {
   var titles = [];
   try {
-    titles = await Profile.findOne({ id: profileID }, 'titles', (err, data) => {
+    await Profile.findOne({ id: profileID }, 'titles', (err, data) => {
       if (err) throw err;
-      titles = data.titles;
+      titles = data ? data.titles : [];
     });
   }
   catch (err) {
     console.log(err);
   }
-  return titles;
+  return new Promise(resolve => {
+    resolve({ titles: titles });
+  });
 }
