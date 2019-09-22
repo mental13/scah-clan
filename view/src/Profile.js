@@ -30,7 +30,15 @@ class Profile extends React.Component {
       return (
         <ul className="TitleContainer">
           {this.state.roles.map((role, index) => (
-            <li key={role.name + index.toString()} className="TitleListItem">
+            <li key={role.name + index.toString()} className="TitleListItem"
+              onClick={() => {
+                fetch(`/db/${this.props.match.params.profileId}/${role.name}`, { method: 'post' })
+                .then(response => {
+                  if (response.status === 200) {
+                    console.log('Response OK');
+                  }
+                });
+              }}>
               <Title
                 role={role}
               />

@@ -122,6 +122,7 @@ app.get("/db/:profileId/", (req, res) => {
 
 app.post("/db/:profileId/:title", (req, res) => {
   console.log(`${req.params.title} title unlocked for profile: ${req.params.profileId}`);
+  res.status(200).end();
   // store unlocked title for user
 });
 
