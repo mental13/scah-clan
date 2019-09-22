@@ -12,6 +12,10 @@
   box-shadow: inset 0 0 0 1px var(--box-shadow-color);
 }
 
+.TitleListItem[redeemed="true"] {
+  --box-shadow-color: gold;
+}
+
 .TitleListItem::before {
   content: ' ';
   position: absolute;
@@ -19,15 +23,28 @@
   top: 0px;
   width: 100%;
   height: 100%;
-  background-color: gold;
   opacity: 0.0;
-}
-
-.TitleListItem:hover::before {
-  opacity: 0.1;
   z-index: 1;
+  background-color: white;
 }
 
-.TitleListItem:hover {
-  --box-shadow-color: gold;
+.TitleListItem[redeemed="false"][redeemable="false"]::before {
+  background-color: white;
+}
+
+.TitleListItem[redeemed="false"][redeemable="true"]::before {
+  background-color: cyan;
+}
+
+.TitleListItem[redeemed="true"]::before {
+  background-color: gold;
+  opacity: 0.1;
+}
+
+.TitleListItem:hover[redeemed="false"][redeemed="false"]::before {
+  opacity: 0.1;
+}
+
+.TitleListItem:hover[redeemed="false"][redeemable="true"] {
+  --box-shadow-color: cyan;
 }

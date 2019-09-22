@@ -7,7 +7,8 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      roles: null
+      roles: null,
+      titles: null
     };
   }
 
@@ -21,23 +22,31 @@ class Profile extends React.Component {
           this.props.history.push('/')
           return;
         }
-        this.setState({ roles: data.roles })
+        this.setState({
+          roles: data.roles,
+          titles: data.titles
+        })
       });
   }
 
   render() {
-    if (this.state.roles) {
+    if (this.state.roles && this.state.titles) {
       return (
         <ul className="TitleContainer">
           {this.state.roles.map((role, index) => (
             <li key={role.name + index.toString()} className="TitleListItem"
+              redeemed={this.state.titles.includes(role.name).toString()}
+              redeemable={role.isRedeemable.toString()}
               onClick={() => {
-                fetch(`/db/${this.props.match.params.profileId}/${role.name}`, { method: 'post' })
-                .then(response => {
-                  if (response.status === 200) {
-                    console.log('Response OK');
-                  }
-                });
+                if (this.state.titles.includes(role.name) || !role.isRedeemable) return;
+                fetch(`/db/${this.props.match.params.profileId}/${role.name}`, { method: 'POST' })
+                  .then(response => {
+                    if (response.status === 200) {
+                      const newTitles = this.state.titles;
+                      newTitles.push(role.name);
+                      this.setState({ titles: newTitles });
+                    }
+                  });
               }}>
               <Title
                 role={role}
