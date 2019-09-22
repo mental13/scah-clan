@@ -1,4 +1,5 @@
 import React from "react";
+import './index.css';
 import './Profile.css';
 
 import Title from "./Title.js"
@@ -58,7 +59,7 @@ class Profile extends React.Component {
     }
     else {
       return (
-        <div>Loading...</div>
+        <div className="InfoString Centered">Loading...</div>
       );
     }
   }

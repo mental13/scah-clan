@@ -1,4 +1,5 @@
 import React from "react";
+import './index.css';
 
 class App extends React.Component {
   constructor(props) {
@@ -16,7 +17,9 @@ class App extends React.Component {
 
   render() {
     return (
-      <a href={this.state.oauthUrl}>Authorize</a>
+      <div className="Button Centered">
+        <a href={this.state.oauthUrl}>Authorize</a>
+      </div>
     );
   }
 }

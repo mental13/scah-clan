@@ -1,3 +1,44 @@
 body {
   background-color: grey;
 }
+
+.Centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.InfoString {
+  font-size: 2.5em;
+}
+
+.Button {
+  font-size: 2.5em;
+  box-shadow: inset 0 0 0 1px black;
+}
+
+.Button::before {
+  content: ' ';
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  opacity: 0.0;
+  z-index: 1;
+  background-color: white;
+  pointer-events:none;
+}
+
+.Button:hover::before {
+  opacity: 0.1;
+}
+
+.Button a {
+  display: inline-block;
+  padding: 16px;
+  cursor: default;
+  text-decoration:none;
+  color: inherit
+}
