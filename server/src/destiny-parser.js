@@ -3,6 +3,7 @@ var exports = module.exports = {};
 // These functions receive the whole data payload from the destiny API and parse it for specific stuff that is
 // required to aquire a particular role and will return this data in the following format:
 // name: the name of the role
+// isRedeemable: if all triumphs are complete this will be true, false otherwise
 // triumphs: an array of triumphs
 //  name: name of the triumph
 //  description: flavour text
@@ -82,28 +83,31 @@ exports.parseTriumphant = function (destinyData) {
     reqValue: 3
   };
 
+  const triumphs = [
+    {
+      name: 'Score',
+      description: 'Score',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/3b023bac8a0959be3c0791ecbcf3c5ec.png',
+      isComplete: scoreObjective.isComplete,
+      objectives: [
+        scoreObjective
+      ]
+    },
+    {
+      name: 'Seals',
+      description: 'Seals',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/23599621d4c63076c647384028d96ca4.png',
+      isComplete: sealObjective.isComplete,
+      objectives: [
+        sealObjective
+      ]
+    }
+  ];
+
   return {
     name: 'Triumphant',
-    triumphs: [
-      {
-        name: 'Score',
-        description: 'Score',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/3b023bac8a0959be3c0791ecbcf3c5ec.png',
-        isComplete: scoreObjective.isComplete,
-        objectives: [
-          scoreObjective
-        ]
-      },
-      {
-        name: 'Seals',
-        description: 'Seals',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/23599621d4c63076c647384028d96ca4.png',
-        isComplete: sealObjective.isComplete,
-        objectives: [
-          sealObjective
-        ]
-      }
-    ]
+    isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
+    triumphs: triumphs
   }
 }
 
@@ -279,74 +283,77 @@ exports.parseChosen = function (destinyData) {
 
   // Garden of Salvation - SOON
 
+  const triumphs = [
+    {
+      name: 'Last Wish',
+      description: 'Last Wish',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/fc5791eb2406bf5e6b361f3d16596693.png',
+      isComplete: lwCompleteObjective.isComplete && lwClanObjective.isComplete && lwChallengeObjective.isComplete,
+      objectives: [
+        lwCompleteObjective,
+        lwClanObjective,
+        lwChallengeObjective
+      ]
+    },
+    {
+      name: 'Scourge of the Past',
+      description: 'Scourge of the Past',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/8b1bfd1c1ce1cab51d23c78235a6e067.png',
+      isComplete: sotpCompleteObjective.isComplete && sotpClanObjective.isComplete && sotpChallengeObjective.isComplete,
+      objectives: [
+        sotpCompleteObjective,
+        sotpClanObjective,
+        sotpChallengeObjective
+      ]
+    },
+    {
+      name: 'Crown of Sorrows',
+      description: 'Crown of Sorrows',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/decaf52ed74c6e66ae363fea24af2ba2.png',
+      isComplete: cosCompleteObjective.isComplete && cosClanObjective.isComplete && cosChallengeObjective.isComplete,
+      objectives: [
+        cosCompleteObjective,
+        cosClanObjective,
+        cosChallengeObjective
+      ]
+    },
+    {
+      name: 'Leviathan',
+      description: 'Leviathan',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
+      isComplete: lCompleteObjective.isComplete && lPrestigeObjective.isComplete && lChallengeObjective.isComplete,
+      objectives: [
+        lCompleteObjective,
+        lPrestigeObjective,
+        lChallengeObjective
+      ]
+    },
+    {
+      name: 'Eater of Worlds',
+      description: 'Eater of Worlds',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
+      isComplete: eowCompleteObjective.isComplete && eowPrestigeObjective.isComplete,
+      objectives: [
+        eowCompleteObjective,
+        eowPrestigeObjective
+      ]
+    },
+    {
+      name: 'Spire of Stars',
+      description: 'Spire of Stars',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
+      isComplete: sosCompleteObjective.isComplete && sosPrestigeObjective.isComplete,
+      objectives: [
+        sosCompleteObjective,
+        sosPrestigeObjective
+      ]
+    }
+  ];
+
   return {
     name: 'Chosen',
-    triumphs: [
-      {
-        name: 'Last Wish',
-        description: 'Last Wish',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/fc5791eb2406bf5e6b361f3d16596693.png',
-        isComplete: lwCompleteObjective.isComplete && lwClanObjective.isComplete && lwChallengeObjective.isComplete,
-        objectives: [
-          lwCompleteObjective,
-          lwClanObjective,
-          lwChallengeObjective
-        ]
-      },
-      {
-        name: 'Scourge of the Past',
-        description: 'Scourge of the Past',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/8b1bfd1c1ce1cab51d23c78235a6e067.png',
-        isComplete: sotpCompleteObjective.isComplete && sotpClanObjective.isComplete && sotpChallengeObjective.isComplete,
-        objectives: [
-          sotpCompleteObjective,
-          sotpClanObjective,
-          sotpChallengeObjective
-        ]
-      },
-      {
-        name: 'Crown of Sorrows',
-        description: 'Crown of Sorrows',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/decaf52ed74c6e66ae363fea24af2ba2.png',
-        isComplete: cosCompleteObjective.isComplete && cosClanObjective.isComplete && cosChallengeObjective.isComplete,
-        objectives: [
-          cosCompleteObjective,
-          cosClanObjective,
-          cosChallengeObjective
-        ]
-      },
-      {
-        name: 'Leviathan',
-        description: 'Leviathan',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
-        isComplete: lCompleteObjective.isComplete && lPrestigeObjective.isComplete && lChallengeObjective.isComplete,
-        objectives: [
-          lCompleteObjective,
-          lPrestigeObjective,
-          lChallengeObjective
-        ]
-      },
-      {
-        name: 'Eater of Worlds',
-        description: 'Eater of Worlds',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
-        isComplete: eowCompleteObjective.isComplete && eowPrestigeObjective.isComplete,
-        objectives: [
-          eowCompleteObjective,
-          eowPrestigeObjective
-        ]
-      },
-      {
-        name: 'Spire of Stars',
-        description: 'Spire of Stars',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/525ebce0b78615a94b62e5969afd1485.png',
-        isComplete: sosCompleteObjective.isComplete && sosPrestigeObjective.isComplete,
-        objectives: [
-          sosCompleteObjective,
-          sosPrestigeObjective
-        ]
-      }
-    ]
+    isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
+    triumphs: triumphs
   }
 }
 
@@ -436,37 +443,40 @@ exports.parseConqueror = function (destinyData) {
     ]
   };
 
+  const triumphs = [
+    {
+      name: 'Valor Rank',
+      description: 'Reset your Valor Rank 3 times in the active season',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/71c0b0cc81c1e92ce675c295a4a8e347.png',
+      isComplete: resetObjective.isComplete,
+      objectives: [
+        resetObjective
+      ]
+    },
+    {
+      name: 'Pinacle Weapons',
+      description: 'Aquire weapons',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/2565ae54801563abfefd78f8c2dd6463.png',
+      isComplete: collectionObjective.isComplete,
+      objectives: [
+        collectionObjective
+      ]
+    },
+    {
+      name: 'Exotic Weapons',
+      description: 'Aquire weapons',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/f0a13943dfd6f1bffd8f88e82381db8a.png',
+      isComplete: collectionObjective.isComplete,
+      objectives: [
+        exoticObjective
+      ]
+    },
+  ];
+
   return {
     name: 'Conqueror',
-    triumphs: [
-      {
-        name: 'Valor Rank',
-        description: 'Reset your Valor Rank 3 times in the active season',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/71c0b0cc81c1e92ce675c295a4a8e347.png',
-        isComplete: resetObjective.isComplete,
-        objectives: [
-          resetObjective
-        ]
-      },
-      {
-        name: 'Pinacle Weapons',
-        description: 'Aquire weapons',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/2565ae54801563abfefd78f8c2dd6463.png',
-        isComplete: collectionObjective.isComplete,
-        objectives: [
-          collectionObjective
-        ]
-      },
-      {
-        name: 'Exotic Weapons',
-        description: 'Aquire weapons',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/f0a13943dfd6f1bffd8f88e82381db8a.png',
-        isComplete: collectionObjective.isComplete,
-        objectives: [
-          exoticObjective
-        ]
-      },
-    ]
+    isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
+    triumphs: triumphs
   }
 }
 
@@ -536,37 +546,40 @@ exports.parseOutlaw = function (destinyData) {
     ]
   };
 
+  const triumphs = [
+    {
+      name: 'Infamy Rank',
+      description: 'Reset your Infamy Rank in the active season',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/fc31e8ede7cc15908d6e2dfac25d78ff.png',
+      isComplete: resetObjective.isComplete,
+      objectives: [
+        resetObjective
+      ]
+    },
+    {
+      name: 'Pinacle Weapons',
+      description: 'Aquire weapons',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/2565ae54801563abfefd78f8c2dd6463.png',
+      isComplete: collectionObjective.isComplete,
+      objectives: [
+        collectionObjective
+      ]
+    },
+    {
+      name: 'Exotic Weapons',
+      description: 'Aquire weapons',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/f0a13943dfd6f1bffd8f88e82381db8a.png',
+      isComplete: collectionObjective.isComplete,
+      objectives: [
+        exoticObjective
+      ]
+    },
+  ];
+
   return {
     name: 'Outlaw',
-    triumphs: [
-      {
-        name: 'Infamy Rank',
-        description: 'Reset your Infamy Rank in the active season',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/fc31e8ede7cc15908d6e2dfac25d78ff.png',
-        isComplete: resetObjective.isComplete,
-        objectives: [
-          resetObjective
-        ]
-      },
-      {
-        name: 'Pinacle Weapons',
-        description: 'Aquire weapons',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/2565ae54801563abfefd78f8c2dd6463.png',
-        isComplete: collectionObjective.isComplete,
-        objectives: [
-          collectionObjective
-        ]
-      },
-      {
-        name: 'Exotic Weapons',
-        description: 'Aquire weapons',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/f0a13943dfd6f1bffd8f88e82381db8a.png',
-        isComplete: collectionObjective.isComplete,
-        objectives: [
-          exoticObjective
-        ]
-      },
-    ]
+    isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
+    triumphs: triumphs
   }
 }
 
@@ -668,28 +681,31 @@ exports.parseVanquisher = function (destinyData) {
     ]
   };
 
+  const triumphs = [
+    {
+      name: 'Nightfalls',
+      description: 'Achieve a high Nightfall rank and complete challenges',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/1538509805dda202c0d14771fe4f6d20.png',
+      isComplete: rankObjective.isComplete && challengeObjective.isComplete,
+      objectives: [
+        rankObjective,
+        challengeObjective
+      ]
+    },
+    {
+      name: 'Pinacle Weapons',
+      description: 'Aquire weapons',
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/2565ae54801563abfefd78f8c2dd6463.png',
+      isComplete: collectionObjective.isComplete,
+      objectives: [
+        collectionObjective
+      ]
+    },
+  ];
+
   return {
     name: 'Vanquisher',
-    triumphs: [
-      {
-        name: 'Nightfalls',
-        description: 'Achieve a high Nightfall rank and complete challenges',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/1538509805dda202c0d14771fe4f6d20.png',
-        isComplete: rankObjective.isComplete && challengeObjective.isComplete,
-        objectives: [
-          rankObjective,
-          challengeObjective
-        ]
-      },
-      {
-        name: 'Pinacle Weapons',
-        description: 'Aquire weapons',
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/2565ae54801563abfefd78f8c2dd6463.png',
-        isComplete: collectionObjective.isComplete,
-        objectives: [
-          collectionObjective
-        ]
-      },
-    ]
+    isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
+    triumphs: triumphs
   }
 }

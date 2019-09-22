@@ -69,7 +69,7 @@ app.get('/oauth/redirect', (req, res) => {
     })
 });
 
-app.get('/destiny/:profileId', (req, res) => {
+app.get('/destiny/:profileId', async (req, res) => {
   // Components:
   // 100 - profile data (character IDs)
   // 102 - profile inventorie (vault)
@@ -87,6 +87,8 @@ app.get('/destiny/:profileId', (req, res) => {
     res.status(403).json({ 'errorMessage': 'Bad Auth' });
     return;
   }
+
+  const titles = await db.getTitlesForProfile(req.params.profileId).then((data) => data.titles);
 
   fetch(`https://www.bungie.net/Platform//Destiny2/4/Profile/${req.params.profileId}/?components=100,102,200,201,202,205,300,700,800,900`,
     {
@@ -111,7 +113,8 @@ app.get('/destiny/:profileId', (req, res) => {
       roleDefinitions.push(destiny.parseVanquisher(data.Response));
 
       res.status(200).json({
-        'roles': roleDefinitions
+        'roles': roleDefinitions,
+        'titles': titles
       });
     });
 });
