@@ -1,16 +1,16 @@
-const express = require("express");
+const express = require('express');
 const path = require('path');
-const cors = require("cors");
+const cors = require('cors');
 
-const dotenv = require("dotenv").config();
-const fetch = require("node-fetch");
-const destiny = require("./destiny-parser")
+const dotenv = require('dotenv').config();
+const fetch = require('node-fetch');
+const destiny = require('./destiny-parser');
 
-const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true});
+const db = require('./db');
+db.connect();
 
 const app = express();
-const port = process.env.PORT || "8000";
+const port = process.env.PORT || '8000';
 
 const ErrorCode = {
   NONE: 0,
@@ -39,13 +39,13 @@ else {
   var REACT_APP_URL = 'http://localhost:3000';
 }
 
-app.get("/oauth", (req, res) => {
+app.get('/oauth', (req, res) => {
   const clientId = process.env.ClIENT_ID;
   // TODO generate state and check it on response
   res.send(`https://www.bungie.net/en/OAuth/Authorize?client_id=${clientId}&response_type=code&state=12345678`);
 });
 
-app.get("/oauth/redirect", (req, res) => {
+app.get('/oauth/redirect', (req, res) => {
   const reqCode = req.query.code;
   const clientId = process.env.ClIENT_ID;
   fetch('https://www.bungie.net/platform/app/oauth/token/',
@@ -69,7 +69,7 @@ app.get("/oauth/redirect", (req, res) => {
     })
 });
 
-app.get("/destiny/:profileId", (req, res) => {
+app.get('/destiny/:profileId', (req, res) => {
   // Components:
   // 100 - profile data (character IDs)
   // 102 - profile inventorie (vault)
@@ -116,14 +116,17 @@ app.get("/destiny/:profileId", (req, res) => {
     });
 });
 
-app.get("/db/:profileId/", (req, res) => {
-  // return unlocked titles or empty array if profileid is missing
+app.get('/db/:profileId/', (req, res) => {
+  db.getTitlesForProfile(req.params.profileId).then((data) => {
+    res.status(200).json({
+      'titles': data.titles
+    });
+  });
 });
 
-app.post("/db/:profileId/:title", (req, res) => {
-  console.log(`${req.params.title} title unlocked for profile: ${req.params.profileId}`);
+app.post('/db/:profileId/:title', (req, res) => {
+  db.addTitleForProfile(req.params.profileId, req.params.title);
   res.status(200).end();
-  // store unlocked title for user
 });
 
 app.listen(port)
