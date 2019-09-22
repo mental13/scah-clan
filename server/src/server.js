@@ -6,6 +6,9 @@ const dotenv = require("dotenv").config();
 const fetch = require("node-fetch");
 const destiny = require("./destiny-parser")
 
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true});
+
 const app = express();
 const port = process.env.PORT || "8000";
 
@@ -111,6 +114,15 @@ app.get("/destiny/:profileId", (req, res) => {
         'roles': roleDefinitions
       });
     });
+});
+
+app.get("/db/:profileId/", (req, res) => {
+  // return unlocked titles or empty array if profileid is missing
+});
+
+app.post("/db/:profileId/:title", (req, res) => {
+  console.log(`${req.params.title} title unlocked for profile: ${req.params.profileId}`);
+  // store unlocked title for user
 });
 
 app.listen(port)
