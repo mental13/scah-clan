@@ -39,14 +39,14 @@ else {
 }
 
 app.get('/oauth', (req, res) => {
-  const clientId = process.env.ClIENT_ID;
+  const clientId = process.env.CLIENT_ID;
   // TODO generate state and check it on response
   res.send(`https://www.bungie.net/en/OAuth/Authorize?client_id=${clientId}&response_type=code&state=12345678`);
 });
 
 app.get('/oauth/redirect', (req, res) => {
   const reqCode = req.query.code;
-  const clientId = process.env.ClIENT_ID;
+  const clientId = process.env.CLIENT_ID;
   fetch('https://www.bungie.net/platform/app/oauth/token/',
     {
       method: 'POST',
