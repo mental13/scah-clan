@@ -27,13 +27,12 @@ if (process.env.NODE_ENV === 'production') {
 
   app.use(express.static(path.join(__dirname, '..', '..', 'view', 'build')));
 
-  app.get('/', (req, res) => {
+  const reactServeHandler = (req, res) => {
     res.sendFile(path.join(__dirname, '..', '..', 'view', 'build', 'index.html'));
-  });
+  };
 
-  app.get('/profile/:profileId', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', '..', 'view', 'build', 'index.html'));
-  });
+  app.get('/', reactServeHandler);
+  app.get('/profile/:profileId', reactServeHandler);
 }
 else {
   var REACT_APP_URL = 'http://localhost:3000';

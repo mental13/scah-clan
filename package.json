@@ -1,0 +1,13 @@
+{
+    "name": "scah-server",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+      "start": "cd server && npm start",
+      "heroku-postbuild": "cd server && npm install && cd ../view && npm install && npm run build"
+    },
+    "engines": {
+      "node": "10.16.0",
+      "npm": "6.9.0"
+    }
+  }
