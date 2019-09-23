@@ -62,8 +62,9 @@ app.get('/oauth/redirect', (req, res) => {
         { method: 'GET', headers: { 'x-api-key': process.env.BUNGIE_API_KEY } })
         .then(response => response.json())
         .then(data => {
-          accessMap[data.Response.destinyMemberships[0].membershipId] = accessToken;
-          res.redirect(`${REACT_APP_URL}/profile/${data.Response.destinyMemberships[0].membershipId}`);
+          const bnetMembership = data.Response.destinyMemberships.find(membership => membership.membershipType == 4);
+          accessMap[bnetMembership.membershipId] = accessToken;
+          res.redirect(`${REACT_APP_URL}/profile/${bnetMembership.membershipId}`);
         })
     })
 });
