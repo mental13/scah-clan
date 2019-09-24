@@ -7,9 +7,9 @@ class Title extends React.Component {
   render() {
     return (
       <div>
-        <div className='TitleName'>{this.props.role.name}</div>
+        <div className='TitleName'>{this.props.title.name}</div>
         <ul className='TriumphContainer'>
-          {this.props.role.triumphs.map((triumph, index) => (
+          {this.props.title.triumphs.map((triumph, index) => (
             <li key={triumph.name + index.toString()} className="TriumphListItem">
             <Triumph
               name={triumph.name}

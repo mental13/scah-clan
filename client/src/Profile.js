@@ -8,8 +8,8 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      roles: null,
-      titles: null
+      titleDefinitions: null,
+      titlesRedeemed: null
     };
   }
 
@@ -24,33 +24,33 @@ class Profile extends React.Component {
           return;
         }
         this.setState({
-          roles: data.roles,
-          titles: data.titles
+          titleDefinitions: data.titleDefinitions,
+          titlesRedeemed: data.titlesRedeemed
         })
       });
   }
 
   render() {
-    if (this.state.roles && this.state.titles) {
+    if (this.state.titleDefinitions && this.state.titlesRedeemed) {
       return (
         <ul className="TitleContainer">
-          {this.state.roles.map((role, index) => (
-            <li key={role.name + index.toString()} className="TitleListItem"
-              redeemed={this.state.titles.includes(role.name).toString()}
-              redeemable={role.isRedeemable.toString()}
+          {this.state.titleDefinitions.map((title, index) => (
+            <li key={title.name + index.toString()} className="TitleListItem"
+              redeemed={this.state.titlesRedeemed.includes(title.name).toString()}
+              redeemable={title.isRedeemable.toString()}
               onClick={() => {
-                if (this.state.titles.includes(role.name) || !role.isRedeemable) return;
-                fetch(`/db/${this.props.match.params.profileId}/${role.name}`, { method: 'POST' })
+                if (this.state.titlesRedeemed.includes(title.name) || !title.isRedeemable) return;
+                fetch(`/db/${this.props.match.params.profileId}/${title.name}`, { method: 'POST' })
                   .then(response => {
                     if (response.status === 200) {
-                      const newTitles = this.state.titles;
-                      newTitles.push(role.name);
-                      this.setState({ titles: newTitles });
+                      const titlesRedeemedUpdated = this.state.titlesRedeemed;
+                      titlesRedeemedUpdated.push(title.name);
+                      this.setState({ titlesRedeemed: titlesRedeemedUpdated });
                     }
                   });
               }}>
               <Title
-                role={role}
+                title={title}
               />
             </li>
           ))}

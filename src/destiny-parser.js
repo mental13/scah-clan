@@ -1,8 +1,8 @@
 var exports = module.exports = {};
 
 // These functions receive the whole data payload from the destiny API and parse it for specific stuff that is
-// required to aquire a particular role and will return this data in the following format:
-// name: the name of the role
+// required to aquire a particular title and will return this data in the following format:
+// name: the name of the title
 // isRedeemable: if all triumphs are complete this will be true, false otherwise
 // triumphs: an array of triumphs
 //  name: name of the triumph

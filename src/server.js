@@ -91,7 +91,7 @@ app.get('/destiny/:profileId', async (req, res) => {
     return;
   }
 
-  const titles = await db.getTitlesForProfile(req.params.profileId).then((data) => data.titles);
+  const titlesRedeemed = await db.getTitlesForProfile(req.params.profileId).then((data) => data.titles);
 
   fetch(`https://www.bungie.net/Platform//Destiny2/4/Profile/${req.params.profileId}/?components=100,102,200,201,202,205,300,700,800,900`,
     {
@@ -107,17 +107,17 @@ app.get('/destiny/:profileId', async (req, res) => {
         res.status(400).json({ 'errorMessage': data.Message });
       }
 
-      let roleDefinitions = [];
-      //roleDefinitions.push(destiny.parseAscendant(data.Response)); // TODO parse inventorie and calculate power
-      roleDefinitions.push(destiny.parseTriumphant(data.Response));
-      roleDefinitions.push(destiny.parseChosen(data.Response));
-      roleDefinitions.push(destiny.parseConqueror(data.Response));
-      roleDefinitions.push(destiny.parseOutlaw(data.Response));
-      roleDefinitions.push(destiny.parseVanquisher(data.Response));
+      let titleDefinitions = [];
+      //titleDefinitions.push(destiny.parseAscendant(data.Response)); // TODO parse inventorie and calculate power
+      titleDefinitions.push(destiny.parseTriumphant(data.Response));
+      titleDefinitions.push(destiny.parseChosen(data.Response));
+      titleDefinitions.push(destiny.parseConqueror(data.Response));
+      titleDefinitions.push(destiny.parseOutlaw(data.Response));
+      titleDefinitions.push(destiny.parseVanquisher(data.Response));
 
       res.status(200).json({
-        'roles': roleDefinitions,
-        'titles': titles
+        'titleDefinitions': titleDefinitions,
+        'titlesRedeemed': titlesRedeemed
       });
     });
 });
@@ -125,7 +125,7 @@ app.get('/destiny/:profileId', async (req, res) => {
 app.get('/db/:profileId/', (req, res) => {
   db.getTitlesForProfile(req.params.profileId).then((data) => {
     res.status(200).json({
-      'titles': data.titles
+      'titlesRedeemed': data.titles
     });
   });
 });
