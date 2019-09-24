@@ -10,38 +10,57 @@ const profileSchema = new mongoose.Schema({
 
 const Profile = mongoose.model('Profile', profileSchema);
 
+var dbConnected = false;
 exports.connect = function () {
   mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useFindAndModify: false,
     useCreateIndex: true,
     useUnifiedTopology: true
+  }).catch(err => {
+    console.error(`DB error: ${err}`);
+  });
+
+  mongoose.connection.on('connected', () => {
+    dbConnected = true;
+  });
+  mongoose.connection.on('error', () => {
+    dbConnected = false;
+  });
+  mongoose.connection.on('disconnected', () => {
+    dbConnected = false;
   });
 }
 
 exports.addProfile = function (profileID) {
-  const profile = new Profile({ id: profileID, titles: [] });
-  profile.save((err, data) => {
-    if (err) console.log(err);
-  });
+  if (dbConnected) {
+    const profile = new Profile({ id: profileID, titles: [] });
+    profile.save((err, data) => {
+      if (err) console.error(err);
+    });
+  }
 }
 
 exports.addTitleForProfile = function (profileID, title) {
-  Profile.findOneAndUpdate({ id: profileID }, { $addToSet: { titles: [title] } }, { upsert: true }, (err, data) => {
-    if (err) console.log(err);
-  });
+  if (dbConnected) {
+    Profile.findOneAndUpdate({ id: profileID }, { $addToSet: { titles: [title] } }, { upsert: true }, (err, data) => {
+      if (err) console.error(err);
+    });
+  }
 }
 
 exports.getTitlesForProfile = async function (profileID) {
   var titles = [];
-  try {
-    await Profile.findOne({ id: profileID }, 'titles', (err, data) => {
-      if (err) throw err;
-      titles = data ? data.titles : [];
-    });
-  }
-  catch (err) {
-    console.log(err);
+  if (dbConnected) {
+    try {
+      await Profile.findOne({ id: profileID }, 'titles', (err, data) => {
+        if (err) throw err;
+        titles = data ? data.titles : [];
+      });
+    }
+    catch (err) {
+      console.error(err);
+    }
   }
   return new Promise(resolve => {
     resolve({ titles: titles });
