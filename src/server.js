@@ -25,10 +25,10 @@ app.use(cors());
 if (process.env.NODE_ENV === 'production') {
   var REACT_APP_URL = '';
 
-  app.use(express.static(path.join(__dirname, '..', '..', 'view', 'build')));
+  app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
   const reactServeHandler = (req, res) => {
-    res.sendFile(path.join(__dirname, '..', '..', 'view', 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
   };
 
   app.get('/', reactServeHandler);
@@ -62,9 +62,12 @@ app.get('/oauth/redirect', (req, res) => {
         { method: 'GET', headers: { 'x-api-key': process.env.BUNGIE_API_KEY } })
         .then(response => response.json())
         .then(data => {
+          // TODO add error handling here
           const bnetMembership = data.Response.destinyMemberships.find(membership => membership.membershipType == 4);
-          accessMap[bnetMembership.membershipId] = accessToken;
-          res.redirect(`${REACT_APP_URL}/profile/${bnetMembership.membershipId}`);
+          if (bnetMembership) {
+            accessMap[bnetMembership.membershipId] = accessToken;
+            res.redirect(`${REACT_APP_URL}/profile/${bnetMembership.membershipId}`);
+          }
         })
     })
 });
