@@ -5,7 +5,7 @@ import App from './App';
 import Profile from './Profile.js'
 import { ErrorLog } from './ErrorLog.js'
 
-import './index.css'
+import './Common.css'
 import './ErrorLog.css';
 
 const routing = (

@@ -1,5 +1,5 @@
 import React from 'react';
-import './index.css';
+import './Common.css';
 import './Profile.css';
 
 import Title from './Title.js'
