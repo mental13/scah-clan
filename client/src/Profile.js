@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 import './index.css';
 import './Profile.css';
 
-import Title from "./Title.js"
+import Title from './Title.js'
 
 class Profile extends React.Component {
   constructor(props) {
@@ -33,9 +33,9 @@ class Profile extends React.Component {
   render() {
     if (this.state.titleDefinitions && this.state.titlesRedeemed) {
       return (
-        <ul className="TitleContainer">
+        <ul className='TitleContainer'>
           {this.state.titleDefinitions.map((title, index) => (
-            <li key={title.name + index.toString()} className="TitleListItem"
+            <li key={title.name + index.toString()} className='TitleListItem'
               redeemed={this.state.titlesRedeemed.includes(title.name).toString()}
               redeemable={title.isRedeemable.toString()}
               onClick={() => {
@@ -59,7 +59,7 @@ class Profile extends React.Component {
     }
     else {
       return (
-        <div className="InfoString Centered">Loading...</div>
+        <div className='InfoString Centered'>Loading...</div>
       );
     }
   }

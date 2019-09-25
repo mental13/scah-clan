@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import './index.css';
 
 class App extends React.Component {
@@ -17,7 +17,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="Button Centered">
+      <div className='Button Centered'>
         <a href={this.state.oauthUrl}>Authorize</a>
       </div>
     );
