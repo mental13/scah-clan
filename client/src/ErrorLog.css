@@ -1,0 +1,44 @@
+.ErrorPopup {
+  z-index: 998;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: red;
+  border: 1px solid black;
+  padding: 8px;
+  margin: 4px;
+}
+
+.ErrorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.ErrorMessage {
+  color: white;
+  flex: 9;
+}
+
+.ErrorClose {
+  color: white;
+  position: relative;
+  width: 10px;
+}
+
+.ErrorClose::before {
+  content: 'X';
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  opacity: 0.0;
+  z-index: 999;
+  color: black;
+}
+
+.ErrorClose:hover::before {
+  opacity: 0.3;
+}

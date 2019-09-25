@@ -3,6 +3,7 @@ import './index.css';
 import './Profile.css';
 
 import Title from './Title.js'
+import { RaiseError } from './ErrorLog.js'
 
 class Profile extends React.Component {
   constructor(props) {
@@ -18,8 +19,7 @@ class Profile extends React.Component {
       .then(response => response.json())
       .then(data => {
         if (data.errorMessage) {
-          // TODO indicate error to user
-          console.log(data.errorMessage);
+          RaiseError(data.errorMessage)
           this.props.history.push('/')
           return;
         }
