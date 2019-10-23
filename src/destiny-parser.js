@@ -33,40 +33,35 @@ function isCollectibleAquired(destinyData, id) {
 
 exports.parseTriumphant = function (destinyData) {
   const triumphScore = destinyData.profileRecords.data.score;
-  const profileSealsIds = [
+  const sealsIds = [
     3170835069, // Shadow
     991908404,  // Reckoner
+    2039028930, // Blacksmith
     3481101973, // Dredgen
     2588182977, // Wayfarer
     147928983,  // Unbroken
     2693736750, // Chronicler
     2516503814, // Cursebreaker
     1162218545, // Rivensbane
+    1002334440, // MMXIX Note: this one's buged and returns 24/25 when completed
   ];
   const charSealsIds = [
-    2039028930, // Blacksmith
-    1002334440, // MMXIX Note: this ones buged and returns 24/25 when completed
+
   ];
 
   const charId = destinyData.profile.data.characterIds[0];
 
   let sealsCompleted = 0;
-  profileSealsIds.forEach(sealId => {
+  sealsIds.forEach(sealId => {
     const sealNode = destinyData.profilePresentationNodes.data.nodes[sealId];
+    if (sealNode) {
+      // workaround for MMXIX seal
+      if (sealId == 1002334440)
+        sealNode.completionValue--;
 
-    if (sealNode.progressValue >= sealNode.completionValue)
-      sealsCompleted++;
-  });
-
-  charSealsIds.forEach(sealId => {
-    const sealNode = destinyData.characterPresentationNodes.data[charId].nodes[sealId];
-
-    // temp workaround
-    if (sealId == 1002334440)
-      sealNode.completionValue--;
-
-    if (sealNode.progressValue >= sealNode.completionValue)
-      sealsCompleted++;
+      if (sealNode.progressValue >= sealNode.completionValue)
+        sealsCompleted++;
+    }
   });
 
   const scoreObjective = {
@@ -358,12 +353,14 @@ exports.parseChosen = function (destinyData) {
 }
 
 exports.parseConqueror = function (destinyData) {
+  const crucibleId = 3882308435;
   const charId = destinyData.profile.data.characterIds[0];
-  const seasonResets = destinyData.characterProgressions.data[charId].progressions[3882308435].seasonResets;
+  const seasonResetCount = destinyData.characterProgressions.data[charId].progressions[crucibleId].currentResetCount;
+
   const resetObjective = {
     hint: 'Resets',
-    isComplete: seasonResets[seasonResets.length - 1].resets >= 3,
-    curValue: seasonResets[seasonResets.length - 1].resets,
+    isComplete: seasonResetCount >= 3,
+    curValue: seasonResetCount,
     reqValue: 3
   }
 
@@ -429,11 +426,11 @@ exports.parseConqueror = function (destinyData) {
     reqValue: 2,
     collectionProgress: [
       {
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/f7ca2e7dfde0f38ead5ce1c36176603f.jpg',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/371ba66cb82c46cfd1e9cc098fa6371e.jpg',
         isAquired: isCollectibleAquired(destinyData, 3074058273)
       },
       {
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/3e518a2eb8ba6888ba723866af55ce8b.jpg',
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/6481ca96bae1de44456ec24afb4e4881.jpg',
         isAquired: isCollectibleAquired(destinyData, 4009683574)
       },
       {
@@ -481,12 +478,14 @@ exports.parseConqueror = function (destinyData) {
 }
 
 exports.parseOutlaw = function (destinyData) {
+  const gambitId = 2772425241;
   const charId = destinyData.profile.data.characterIds[0];
-  const seasonResets = destinyData.characterProgressions.data[charId].progressions[2772425241].seasonResets;
+  const seasonResetCount = destinyData.characterProgressions.data[charId].progressions[gambitId].currentResetCount;
+
   const resetObjective = {
     hint: 'Resets',
-    isComplete: seasonResets[seasonResets.length - 1].resets >= 1,
-    curValue: seasonResets[seasonResets.length - 1].resets,
+    isComplete: seasonResetCount >= 1,
+    curValue: seasonResetCount,
     reqValue: 1
   };
 
@@ -584,68 +583,15 @@ exports.parseOutlaw = function (destinyData) {
 }
 
 exports.parseVanquisher = function (destinyData) {
+  const nfId = 689153319;
   const charId = destinyData.profile.data.characterIds[0];
-
-  const nfIds = [
-    3399168111,
-    1329556468,
-    3951275509,
-    3450793480,
-    2836924866,
-    1060780635,
-    3973165904,
-    1526865549,
-    3340846443,
-    2282894388,
-    2692332187,
-    2099501667,
-    1039797865,
-    165166474
-  ];
-
-  let nfRank = 0;
-  nfIds.forEach(recordId => {
-    const nfRecord = destinyData.characterRecords.data[charId].records[recordId];
-    if (nfRecord.state & RecordStatus.COMPLETED)
-      nfRank += nfRecord.objectives[0].progress;
-  });
-  nfRank = Math.round(nfRank / 100000 - 0.5);
+  const nfRank = destinyData.characterProgressions.data[charId].progressions[nfId].level;
 
   const rankObjective = {
     hint: 'Rank',
     isComplete: nfRank >= 20,
     curValue: nfRank,
     reqValue: 20
-  };
-
-  const nfChallengeIds = [
-    599303591,
-    413743786,
-    3847579126,
-    3641166665,
-    1142177491,
-    1469598452,
-    2140068897,
-    1498229894,
-    4267516859,
-    1442950315,
-    1398454187,
-    3636866482,
-    1871570556,
-    3013611925
-  ];
-
-  let nfChallengesCompleted = 0;
-  nfChallengeIds.forEach(recordId => {
-    if (destinyData.characterRecords.data[charId].records[recordId].state & RecordStatus.COMPLETED)
-      nfChallengesCompleted++;
-  });
-
-  const challengeObjective = {
-    hint: 'Challenges Completed',
-    isComplete: nfChallengesCompleted >= 10,
-    curValue: nfChallengesCompleted,
-    reqValue: 10
   };
 
   const pinacleWeaponIds = [
@@ -684,12 +630,11 @@ exports.parseVanquisher = function (destinyData) {
   const triumphs = [
     {
       name: 'Nightfalls',
-      description: 'Achieve a high Nightfall rank and complete challenges',
+      description: 'Achieve a high Nightfall rank',
       icon: 'https://www.bungie.net/common/destiny2_content/icons/1538509805dda202c0d14771fe4f6d20.png',
-      isComplete: rankObjective.isComplete && challengeObjective.isComplete,
+      isComplete: rankObjective.isComplete,
       objectives: [
-        rankObjective,
-        challengeObjective
+        rankObjective
       ]
     },
     {

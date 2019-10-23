@@ -18,6 +18,8 @@ const ErrorCode = {
   UNAVAILABLE: 5
 }
 
+const STEAM_MEMBERSHIP_ID = 3;
+
 var accessMap = {};
 
 app.use(cors());
@@ -62,8 +64,12 @@ app.get('/oauth/redirect', (req, res) => {
         { method: 'GET', headers: { 'x-api-key': process.env.BUNGIE_API_KEY } })
         .then(response => response.json())
         .then(data => {
-          // TODO add error handling here
-          const bnetMembership = data.Response.destinyMemberships.find(membership => membership.membershipType == 4);
+          if (data.ErrorCode != ErrorCode.SUCCESS) {
+            res.status(400).json({ 'errorMessage': data.Message });
+            return;
+          }
+
+          const bnetMembership = data.Response.destinyMemberships.find(membership => membership.membershipType == STEAM_MEMBERSHIP_ID);
           if (bnetMembership) {
             accessMap[bnetMembership.membershipId] = accessToken;
             res.redirect(`${REACT_APP_URL}/profile/${bnetMembership.membershipId}`);
@@ -84,6 +90,7 @@ app.get('/destiny/:profileId', async (req, res) => {
   // 700 - presentation nodes (seals)
   // 800 - collectibles
   // 900 - triumphs
+  const components = 'components=100,102,200,201,202,205,300,700,800,900'
   const accessToken = accessMap[req.params.profileId];
 
   if (!accessToken) {
@@ -93,7 +100,7 @@ app.get('/destiny/:profileId', async (req, res) => {
 
   const titlesRedeemed = await db.getTitlesForProfile(req.params.profileId).then((data) => data.titles);
 
-  fetch(`https://www.bungie.net/Platform//Destiny2/4/Profile/${req.params.profileId}/?components=100,102,200,201,202,205,300,700,800,900`,
+  fetch(`https://www.bungie.net/Platform//Destiny2/${STEAM_MEMBERSHIP_ID}/Profile/${req.params.profileId}/?${components}`,
     {
       method: 'GET',
       headers: {
