@@ -109,13 +109,16 @@ app.get('/destiny/:profileId', async (req, res) => {
       }
     })
     .then(response => response.json())
-    .then(data => {
+    .then(async (data) => {
       if (data.ErrorCode != ErrorCode.SUCCESS) {
         res.status(400).json({ 'errorMessage': data.Message });
       }
 
+      const profilePower = await destiny.calculateProfilePower(data.Response);
+
       let titleDefinitions = [];
-      //titleDefinitions.push(destiny.parseAscendant(data.Response)); // TODO parse inventorie and calculate power
+      // titleDefinitions.push(destiny.parseMaxed(profilePower));
+      // titleDefinitions.push(destiny.parseAscendant(profilePower));
       titleDefinitions.push(destiny.parseTriumphant(data.Response));
       titleDefinitions.push(destiny.parseChosen(data.Response));
       titleDefinitions.push(destiny.parseConqueror(data.Response));

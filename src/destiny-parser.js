@@ -1,5 +1,7 @@
 var exports = module.exports = {};
 
+const manifest = require('./manifest');
+
 // These functions receive the whole data payload from the destiny API and parse it for specific stuff that is
 // required to aquire a particular title and will return this data in the following format:
 // name: the name of the title
@@ -29,6 +31,16 @@ const CollectibleStatus = {
 
 function isCollectibleAquired(destinyData, id) {
   return !(destinyData.profileCollectibles.data.collectibles[id].state & CollectibleStatus.NOT_ACQUIRED);
+}
+
+exports.calculateProfilePower = async function (destinyData) {
+  return await manifest.getMaxPowerItems(destinyData);
+}
+
+exports.parseMaxed = function (profilePower) {
+}
+
+exports.parseAscendant = function (profilePower) {
 }
 
 exports.parseTriumphant = function (destinyData) {
