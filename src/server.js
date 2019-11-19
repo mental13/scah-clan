@@ -119,11 +119,12 @@ app.get('/destiny/:profileId', async (req, res) => {
       let titleDefinitions = [];
       // titleDefinitions.push(destiny.parseMaxed(profilePower));
       // titleDefinitions.push(destiny.parseAscendant(profilePower));
-      titleDefinitions.push(destiny.parseTriumphant(data.Response));
-      titleDefinitions.push(destiny.parseChosen(data.Response));
-      titleDefinitions.push(destiny.parseConqueror(data.Response));
-      titleDefinitions.push(destiny.parseOutlaw(data.Response));
-      titleDefinitions.push(destiny.parseVanquisher(data.Response));
+      titleDefinitions.push(destiny.parseTriumphs(data.Response));
+      titleDefinitions.push(destiny.parseSeals(data.Response));
+      titleDefinitions.push(destiny.parseRaid(data.Response));
+      titleDefinitions.push(destiny.parseCrucible(data.Response));
+      titleDefinitions.push(destiny.parseGambit(data.Response));
+      titleDefinitions.push(destiny.parseVanguard(data.Response));
 
       res.status(200).json({
         'titleDefinitions': titleDefinitions,
