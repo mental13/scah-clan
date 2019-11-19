@@ -53,16 +53,12 @@ function isCollectibleAquired(destinyData, id) {
 
 async function calculateProfilePower(destinyData) {
   const profilePower = await manifest.getMaxPowerItems(destinyData);
-
-  const weaponAvg = profilePower.weapons.reduce((sum, elem) => { return sum + elem }, 0) / 3;
-  const warlockArmorAvg = profilePower.warlock.reduce((sum, elem) => { return sum + elem }, 0) / 5;
-  const titanArmorAvg = profilePower.titan.reduce((sum, elem) => { return sum + elem }, 0) / 5;
-  const hunterArmorAvg = profilePower.hunter.reduce((sum, elem) => { return sum + elem }, 0) / 5;
+  const weaponSum = profilePower.weapons.reduce((sum, elem) => { return sum + elem }, 0);
 
   return {
-    warlockPower: (weaponAvg + warlockArmorAvg) / 2,
-    titanPower: (weaponAvg + titanArmorAvg) / 2,
-    hunterPower: (weaponAvg + hunterArmorAvg) / 2
+    warlockPower: Math.floor((profilePower.warlock.reduce((sum, elem) => { return sum + elem }, 0) + weaponSum) / 8),
+    titanPower: Math.floor((profilePower.titan.reduce((sum, elem) => { return sum + elem }, 0) + weaponSum) / 8),
+    hunterPower: Math.floor((profilePower.hunter.reduce((sum, elem) => { return sum + elem }, 0) + weaponSum) / 8)
   }
 }
 
