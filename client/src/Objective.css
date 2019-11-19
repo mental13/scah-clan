@@ -32,7 +32,7 @@
 }
 
 .Objective .Checkbox[complete="true"]::before {
-  background-color: green;
+  background-color: var(--color);
 }
 
 .ProgressBar {
@@ -61,7 +61,7 @@
 }
 
 .ProgressBar .Fill {
-  background-color: green;
+  background-color: var(--color);
   position: absolute;
   background-clip: content-box;
   top: 0;

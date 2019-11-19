@@ -5,6 +5,7 @@ const manifest = require('./manifest');
 // These functions receive the whole data payload from the destiny API and parse it for specific stuff that is
 // required to aquire a particular title and will return this data in the following format:
 // name: the name of the title
+// color: the color of the title
 // isRedeemable: if all triumphs are complete this will be true, false otherwise
 // triumphs: an array of triumphs
 //  name: name of the triumph
@@ -141,11 +142,13 @@ function parsePower(profilePower) {
   return [
     {
       name: 'Maxed',
+      color: '#67B71F',
       isRedeemable: maxedTriumphs.every((triumph) => triumph.isComplete == true),
       triumphs: maxedTriumphs
     },
     {
       name: 'Ascendant',
+      color: '#85FF10',
       isRedeemable: ascendantTriumphs.every((triumph) => triumph.isComplete == true),
       triumphs: ascendantTriumphs
     }
@@ -175,6 +178,7 @@ function parseTriumphs(destinyData) {
 
   return {
     name: 'Triumphant',
+    color: '#4947BE',
     isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
     triumphs: triumphs
   }
@@ -218,6 +222,7 @@ function parseSeals(destinyData) {
 
   return {
     name: 'Entitled',
+    color: '#8659B6',
     isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
     triumphs: triumphs
   }
@@ -301,6 +306,7 @@ function parseRaid(destinyData) {
 
   return {
     name: 'Chosen',
+    color: '#AB7C1A',
     isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
     triumphs: triumphs
   }
@@ -390,6 +396,7 @@ function parseCrucible(destinyData) {
 
   return {
     name: "Shaxx's Favourite",
+    color: '#9F4436',
     isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
     triumphs: triumphs
   }
@@ -479,6 +486,7 @@ function parseGambit(destinyData) {
 
   return {
     name: 'Notorious',
+    color: '#1A8B12',
     isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
     triumphs: triumphs
   }
@@ -567,6 +575,7 @@ function parseVanguard(destinyData) {
 
   return {
     name: 'Vanguardian',
+    color: '#396189',
     isRedeemable: triumphs.every((triumph) => triumph.isComplete == true),
     triumphs: triumphs
   }

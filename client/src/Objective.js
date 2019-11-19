@@ -12,28 +12,33 @@ class Objective extends React.Component {
   }
 
   render() {
+    const styles = {
+      checkbox: { "--color": this.props.color },
+      fill: { width: this.getProgressPercent() + '%', "--color": this.props.color }
+    };
+
     if (this.props.collectionProgress)
       return (
         <div className='Objective' type='collection'>
           <ul className='CollectibleContainer'>
-          {this.props.collectionProgress.map((collectible, index) => (
-            <li key={index} className='CollectibleListItem'>
-              <div className='Collectible' aquired={collectible.isAquired.toString()}><img src={collectible.icon} alt='' /></div>
-            </li>
-          ))}
-        </ul>
+            {this.props.collectionProgress.map((collectible, index) => (
+              <li key={index} className='CollectibleListItem'>
+                <div className='Collectible' aquired={collectible.isAquired.toString()}><img src={collectible.icon} alt='' /></div>
+              </li>
+            ))}
+          </ul>
         </div>
       );
     else
       return (
         <div className='Objective' type='progress'>
-          <div className='Checkbox' complete={this.isComplete()}></div>
+          <div className='Checkbox' style={styles.checkbox} complete={this.isComplete()}></div>
           <div className='ProgressBar'>
             <div className='ProgressContainer'>
               <div className='Hint'>{this.props.hint}</div>
               <div className='Progress'>{this.props.curValue}/{this.props.reqValue}</div>
             </div>
-            <div className='Fill' style={{ width: this.getProgressPercent() + '%' }}></div>
+            <div className='Fill' style={styles.fill}></div>
           </div>
         </div>
       );
