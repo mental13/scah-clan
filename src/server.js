@@ -114,18 +114,7 @@ app.get('/destiny/:profileId', async (req, res) => {
         res.status(400).json({ 'errorMessage': data.Message });
       }
 
-      const profilePower = await destiny.calculateProfilePower(data.Response);
-
-      let titleDefinitions = [];
-      // titleDefinitions.push(destiny.parseMaxed(profilePower));
-      // titleDefinitions.push(destiny.parseAscendant(profilePower));
-      titleDefinitions.push(destiny.parseTriumphs(data.Response));
-      titleDefinitions.push(destiny.parseSeals(data.Response));
-      titleDefinitions.push(destiny.parseRaid(data.Response));
-      titleDefinitions.push(destiny.parseCrucible(data.Response));
-      titleDefinitions.push(destiny.parseGambit(data.Response));
-      titleDefinitions.push(destiny.parseVanguard(data.Response));
-
+      const titleDefinitions = await destiny.getTitleDefinitions(data.Response);
       res.status(200).json({
         'titleDefinitions': titleDefinitions,
         'titlesRedeemed': titlesRedeemed

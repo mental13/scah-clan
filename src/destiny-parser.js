@@ -29,21 +29,130 @@ const CollectibleStatus = {
   NOT_ACQUIRED: 1
 }
 
+exports.getTitleDefinitions = async function (destinyData) {
+  const profilePower = await calculateProfilePower(destinyData);
+  let [maxedTitle, ascendantTitle] = parsePower(profilePower);
+
+  let titleDefinitions = [];
+  titleDefinitions.push(maxedTitle);
+  titleDefinitions.push(ascendantTitle);
+  titleDefinitions.push(parseTriumphs(destinyData));
+  titleDefinitions.push(parseSeals(destinyData));
+  titleDefinitions.push(parseRaid(destinyData));
+  titleDefinitions.push(parseCrucible(destinyData));
+  titleDefinitions.push(parseGambit(destinyData));
+  titleDefinitions.push(parseVanguard(destinyData));
+
+  return titleDefinitions
+}
+
 function isCollectibleAquired(destinyData, id) {
   return !(destinyData.profileCollectibles.data.collectibles[id].state & CollectibleStatus.NOT_ACQUIRED);
 }
 
-exports.calculateProfilePower = async function (destinyData) {
-  return await manifest.getMaxPowerItems(destinyData);
+async function calculateProfilePower(destinyData) {
+  const profilePower = await manifest.getMaxPowerItems(destinyData);
+
+  const weaponAvg = profilePower.weapons.reduce((sum, elem) => { return sum + elem }, 0) / 3;
+  const warlockArmorAvg = profilePower.warlock.reduce((sum, elem) => { return sum + elem }, 0) / 5;
+  const titanArmorAvg = profilePower.titan.reduce((sum, elem) => { return sum + elem }, 0) / 5;
+  const hunterArmorAvg = profilePower.hunter.reduce((sum, elem) => { return sum + elem }, 0) / 5;
+
+  return {
+    warlockPower: (weaponAvg + warlockArmorAvg) / 2,
+    titanPower: (weaponAvg + titanArmorAvg) / 2,
+    hunterPower: (weaponAvg + hunterArmorAvg) / 2
+  }
 }
 
-exports.parseMaxed = function (profilePower) {
+function parsePower(profilePower) {
+  const POWER_REQ = 950;
+
+  const powerObjective = {
+    hint: 'Power',
+    isComplete: Object.values(profilePower).some(power => power >= POWER_REQ),
+    curValue: Math.max.apply(Math, Object.values(profilePower)),
+    reqValue: POWER_REQ
+  };
+
+  const maxedTriumphs = [
+    {
+      name: 'Power',
+      description: `Achieve a gear Light Level of ${POWER_REQ}`,
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/d3b2afca86d26c707c91f72bc910a938.png',
+      isComplete: powerObjective.isComplete,
+      objectives: [
+        powerObjective
+      ]
+    }
+  ];
+
+  const warlockObjective = {
+    hint: 'Power',
+    isComplete: profilePower.warlockPower >= POWER_REQ,
+    curValue: profilePower.warlockPower,
+    reqValue: POWER_REQ
+  };
+
+  const titanObjective = {
+    hint: 'Power',
+    isComplete: profilePower.titanPower >= POWER_REQ,
+    curValue: profilePower.titanPower,
+    reqValue: POWER_REQ
+  };
+
+  const hunterObjective = {
+    hint: 'Power',
+    isComplete: profilePower.hunterPower >= POWER_REQ,
+    curValue: profilePower.hunterPower,
+    reqValue: POWER_REQ
+  };
+
+  const ascendantTriumphs = [
+    {
+      name: 'Power',
+      description: `Achieve a gear Light Level of ${POWER_REQ} on a Warlock`,
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/08abe62a2664be8c3239e23a80dfea9d.png',
+      isComplete: warlockObjective.isComplete,
+      objectives: [
+        warlockObjective
+      ]
+    },
+    {
+      name: 'Power',
+      description: `Achieve a gear Light Level of ${POWER_REQ} on a Titan`,
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/e78f012b19b5f6c6026c12547895b756.png',
+      isComplete: titanObjective.isComplete,
+      objectives: [
+        titanObjective
+      ]
+    },
+    {
+      name: 'Power',
+      description: `Achieve a gear Light Level of ${POWER_REQ} on a Hunter`,
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/bfe570eef316e3893589a152af716479.png',
+      isComplete: hunterObjective.isComplete,
+      objectives: [
+        hunterObjective
+      ]
+    }
+  ];
+
+  return [
+    {
+      name: 'Maxed',
+      isRedeemable: maxedTriumphs.every((triumph) => triumph.isComplete == true),
+      triumphs: maxedTriumphs
+    },
+    {
+      name: 'Ascendant',
+      isRedeemable: ascendantTriumphs.every((triumph) => triumph.isComplete == true),
+      triumphs: ascendantTriumphs
+    }
+  ]
 }
 
-exports.parseAscendant = function (profilePower) {
-}
-
-exports.parseTriumphs = function (destinyData) {
+function parseTriumphs(destinyData) {
   const TRIUMPH_POINTS_REQ = 95000;
   const scoreObjective = {
     hint: 'Score',
@@ -71,7 +180,7 @@ exports.parseTriumphs = function (destinyData) {
   }
 }
 
-exports.parseSeals = function (destinyData) {
+function parseSeals(destinyData) {
   const sealsIds = [
     2209950401, // Harbinger
     4097789885, // Enlightened
@@ -114,7 +223,7 @@ exports.parseSeals = function (destinyData) {
   }
 }
 
-exports.parseRaid = function (destinyData) {
+function parseRaid(destinyData) {
 
   const OLD_RAID_COMPLETIONS_REQ = 20;
   const NEW_RAID_COMPLETIONS_REQ = 10;
@@ -197,7 +306,7 @@ exports.parseRaid = function (destinyData) {
   }
 }
 
-exports.parseCrucible = function (destinyData) {
+function parseCrucible(destinyData) {
   const crucibleId = 3882308435;
   const charId = destinyData.profile.data.characterIds[0];
   const seasonResetCount = destinyData.characterProgressions.data[charId].progressions[crucibleId].currentResetCount;
@@ -286,7 +395,7 @@ exports.parseCrucible = function (destinyData) {
   }
 }
 
-exports.parseGambit = function (destinyData) {
+function parseGambit(destinyData) {
   const gambitId = 2772425241;
   const charId = destinyData.profile.data.characterIds[0];
   const seasonResetCount = destinyData.characterProgressions.data[charId].progressions[gambitId].currentResetCount;
@@ -375,7 +484,7 @@ exports.parseGambit = function (destinyData) {
   }
 }
 
-exports.parseVanguard = function (destinyData) {
+function parseVanguard(destinyData) {
   const nfId = 689153319;
   const charId = destinyData.profile.data.characterIds[0];
   const nfRank = destinyData.characterProgressions.data[charId].progressions[nfId].level;
@@ -402,7 +511,7 @@ exports.parseVanguard = function (destinyData) {
   }
 
   const ritualWeaponIds = [
-    853534062 , // Edgewise
+    853534062, // Edgewise
   ];
 
   let ritualWeaponAquired = 0;
