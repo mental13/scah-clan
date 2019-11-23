@@ -5,6 +5,7 @@ const profileSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
+  discordId: String,
   titles: [String],
 })
 
@@ -32,10 +33,9 @@ exports.connect = function () {
   });
 }
 
-exports.addProfile = function (profileID) {
+exports.linkDiscordForProfile = function (profileID, discordId) {
   if (dbConnected) {
-    const profile = new Profile({ id: profileID, titles: [] });
-    profile.save((err, data) => {
+    Profile.findOneAndUpdate({ id: profileID }, { discordId: discordId }, { upsert: true }, (err, data) => {
       if (err) console.error(err);
     });
   }

@@ -29,25 +29,35 @@ if (process.env.NODE_ENV === 'production') {
 
   app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
-  const reactServeHandler = (req, res) => {
+  const reactDefaultHandler = (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
   };
 
-  app.get('/', reactServeHandler);
-  app.get('/profile/:profileId', reactServeHandler);
+  app.get('/', reactDefaultHandler);
+  app.get('/profile/:profileId', reactDefaultHandler);
 }
 else {
   var REACT_APP_URL = 'http://localhost:3000';
 }
 
-app.get('/oauth', (req, res) => {
+function getOauthURL() {
   const clientId = process.env.CLIENT_ID;
-  // TODO generate state and check it on response
-  res.send(`https://www.bungie.net/en/OAuth/Authorize?client_id=${clientId}&response_type=code&state=12345678`);
+  return `https://www.bungie.net/en/OAuth/Authorize?client_id=${clientId}&response_type=code`;
+}
+
+app.get('/oauth/', (req, res) => {
+  res.send(getOauthURL());
+});
+
+app.get('/register/', (req, res) => {
+  const discordId = req.query.di;
+  const stateParam = discordId ? `&state=${discordId}` : '';
+  res.redirect(getOauthURL() + stateParam);
 });
 
 app.get('/oauth/redirect', (req, res) => {
   const reqCode = req.query.code;
+  const discordId = req.query.state;
   const clientId = process.env.CLIENT_ID;
   fetch('https://www.bungie.net/platform/app/oauth/token/',
     {
@@ -71,8 +81,10 @@ app.get('/oauth/redirect', (req, res) => {
 
           const bnetMembership = data.Response.destinyMemberships.find(membership => membership.membershipType == STEAM_MEMBERSHIP_ID);
           if (bnetMembership) {
-            accessMap[bnetMembership.membershipId] = accessToken;
-            res.redirect(`${REACT_APP_URL}/profile/${bnetMembership.membershipId}`);
+            const profileId = bnetMembership.membershipId;
+            accessMap[profileId] = accessToken;
+            db.linkDiscordForProfile(profileId, discordId)
+            res.redirect(`${REACT_APP_URL}/profile/${profileId}`);
           }
         })
     })
