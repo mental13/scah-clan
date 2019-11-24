@@ -142,7 +142,13 @@ app.get('/destiny/:profileId', async (req, res) => {
 });
 
 app.get('/titles/:discordId', (req, res) => {
-
+  db.getTitlesForDiscordUser(req.params.discordId).then((data) => {
+    const statusCode = data.error ? 404 : 200;
+    res.status(statusCode).json({
+      'titles': data.titles,
+      'error': data.error
+    });
+  });
 });
 
 app.get('/db/:profileId/', (req, res) => {

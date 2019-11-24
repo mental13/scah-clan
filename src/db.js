@@ -77,5 +77,31 @@ exports.getRedeemedTitlesForProfile = async function (profileID) {
   return getTitlesForProfile(profileID, true);
 }
 
+async function getLinkedProfile(discordId) {
+  var profileId;
+  if (dbConnected) {
+    try {
+      await Profile.findOne({ discordId: discordId }, 'id', (err, data) => {
+        if (err) throw err;
+        profileId = data ? data.id : null;
+      });
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
+  return new Promise(resolve => {
+    resolve({ id: profileId });
+  });
+}
+
 exports.getTitlesForDiscordUser = async function (discordId) {
+  const linkedProfile = await getLinkedProfile(discordId);
+  if (!linkedProfile.id) {
+    return new Promise(resolve => {
+      resolve({ error: 'This discord ID has no linked profile' });
+    });
+  }
+
+  return getTitlesForProfile(linkedProfile.id);
 }
