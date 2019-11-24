@@ -264,7 +264,7 @@ function parseRaid(destinyData) {
   const triumphs = [
     {
       name: 'Garden of Salvation',
-      description: `Complete the raid ${NEW_RAID_COMPLETIONS_REQ} time`,
+      description: `Complete the raid ${NEW_RAID_COMPLETIONS_REQ} times`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/6c13fd357e95348a3ab1892fc22ba3ac.png',
       isComplete: gosCompleteObjective.isComplete,
       objectives: [
@@ -273,7 +273,7 @@ function parseRaid(destinyData) {
     },
     {
       name: 'Last Wish',
-      description: `Complete the raid ${OLD_RAID_COMPLETIONS_REQ} time`,
+      description: `Complete the raid ${OLD_RAID_COMPLETIONS_REQ} times`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/fc5791eb2406bf5e6b361f3d16596693.png',
       isComplete: lwCompleteObjective.isComplete,
       objectives: [
@@ -282,7 +282,7 @@ function parseRaid(destinyData) {
     },
     {
       name: 'Scourge of the Past',
-      description: `Complete the raid ${OLD_RAID_COMPLETIONS_REQ} time`,
+      description: `Complete the raid ${OLD_RAID_COMPLETIONS_REQ} times`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/8b1bfd1c1ce1cab51d23c78235a6e067.png',
       isComplete: sotpCompleteObjective.isComplete,
       objectives: [
@@ -291,7 +291,7 @@ function parseRaid(destinyData) {
     },
     {
       name: 'Crown of Sorrows',
-      description: `Complete the raid ${OLD_RAID_COMPLETIONS_REQ} time`,
+      description: `Complete the raid ${OLD_RAID_COMPLETIONS_REQ} times`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/decaf52ed74c6e66ae363fea24af2ba2.png',
       isComplete: cosCompleteObjective.isComplete,
       objectives: [
