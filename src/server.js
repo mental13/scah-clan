@@ -110,7 +110,7 @@ app.get('/destiny/:profileId', async (req, res) => {
     return;
   }
 
-  const titlesRedeemed = await db.getTitlesForProfile(req.params.profileId).then((data) => data.titles);
+  const titlesRedeemed = await db.getRedeemedTitlesForProfile(req.params.profileId).then((data) => data.titles);
 
   fetch(`https://www.bungie.net/Platform//Destiny2/${STEAM_MEMBERSHIP_ID}/Profile/${req.params.profileId}/?${components}`,
     {
@@ -127,6 +127,13 @@ app.get('/destiny/:profileId', async (req, res) => {
       }
 
       const titleDefinitions = await destiny.getTitleDefinitions(data.Response);
+
+      const titlesEarned = [];
+      titleDefinitions.forEach(title => {
+        if (title.isRedeemable) titlesEarned.push(title.name);
+      });
+      db.addTitlesForProfile(req.params.profileId, titlesEarned);
+
       res.status(200).json({
         'titleDefinitions': titleDefinitions,
         'titlesRedeemed': titlesRedeemed
@@ -134,8 +141,12 @@ app.get('/destiny/:profileId', async (req, res) => {
     });
 });
 
+app.get('/titles/:discordId', (req, res) => {
+
+});
+
 app.get('/db/:profileId/', (req, res) => {
-  db.getTitlesForProfile(req.params.profileId).then((data) => {
+  db.getRedeemedTitlesForProfile(req.params.profileId).then((data) => {
     res.status(200).json({
       'titlesRedeemed': data.titles
     });
@@ -143,7 +154,7 @@ app.get('/db/:profileId/', (req, res) => {
 });
 
 app.post('/db/:profileId/:title', (req, res) => {
-  db.addTitleForProfile(req.params.profileId, req.params.title);
+  db.redeemTitleForProfile(req.params.profileId, req.params.title);
   res.status(200).end();
 });
 

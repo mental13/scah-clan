@@ -6,7 +6,8 @@ const profileSchema = new mongoose.Schema({
     unique: true,
   },
   discordId: String,
-  titles: [String],
+  earnedTitles: [String],
+  redeemedTitles: [String]
 })
 
 const Profile = mongoose.model('Profile', profileSchema);
@@ -41,21 +42,26 @@ exports.linkDiscordForProfile = function (profileID, discordId) {
   }
 }
 
-exports.addTitleForProfile = function (profileID, title) {
+exports.addTitlesForProfile = function (profileID, titles, redeem = false) {
   if (dbConnected) {
-    Profile.findOneAndUpdate({ id: profileID }, { $addToSet: { titles: [title] } }, { upsert: true }, (err, data) => {
+    const update = redeem ? { $addToSet: { redeemedTitles: titles } } : { $addToSet: { earnedTitles: titles } };
+    Profile.findOneAndUpdate({ id: profileID }, update, { upsert: true }, (err, data) => {
       if (err) console.error(err);
     });
   }
 }
 
-exports.getTitlesForProfile = async function (profileID) {
+exports.redeemTitleForProfile = function (profileID, title) {
+  exports.addTitlesForProfile(profileID, [title], true);
+}
+
+async function getTitlesForProfile(profileID, redeemed = false) {
   var titles = [];
   if (dbConnected) {
     try {
-      await Profile.findOne({ id: profileID }, 'titles', (err, data) => {
+      await Profile.findOne({ id: profileID }, redeemed ? 'redeemedTitles' : 'earnedTitles', (err, data) => {
         if (err) throw err;
-        titles = data ? data.titles : [];
+        titles = data ? (redeemed ? data.redeemedTitles : data.earnedTitles) : [];
       });
     }
     catch (err) {
@@ -65,4 +71,11 @@ exports.getTitlesForProfile = async function (profileID) {
   return new Promise(resolve => {
     resolve({ titles: titles });
   });
+}
+
+exports.getRedeemedTitlesForProfile = async function (profileID) {
+  return getTitlesForProfile(profileID, true);
+}
+
+exports.getTitlesForDiscordUser = async function (discordId) {
 }
