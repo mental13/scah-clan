@@ -114,3 +114,26 @@ exports.getTitlesForDiscordUser = async function (discordId) {
 
   return getTitlesForProfile(linkedProfile.id);
 }
+
+exports.getRefreshTokenForDiscordUser = async function (discordId) {
+  var profileId;
+  var refreshToken;
+  if (dbConnected) {
+    try {
+      await Profile.findOne({ discordId: discordId }, 'id token', (err, data) => {
+        if (err) throw err;
+        profileId = data ? data.id : null;
+        refreshToken = data ? data.token : null;
+      });
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
+  return new Promise(resolve => {
+    resolve({
+      profileId: profileId,
+      token: refreshToken
+    });
+  });
+}

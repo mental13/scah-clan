@@ -99,7 +99,7 @@ app.get('/oauth/redirect', (req, res) => {
     })
 });
 
-app.get('/destiny/:profileId', async (req, res) => {
+async function getDestinyData(profileId, accessToken) {
   // Components:
   // 100 - profile data (character IDs)
   // 102 - profile inventorie (vault)
@@ -111,17 +111,8 @@ app.get('/destiny/:profileId', async (req, res) => {
   // 700 - presentation nodes (seals)
   // 800 - collectibles
   // 900 - triumphs
-  const components = 'components=100,102,200,201,202,205,300,700,800,900'
-  const accessToken = accessMap[req.params.profileId];
-
-  if (!accessToken) {
-    res.status(403).json({ 'errorMessage': 'Bad Auth' });
-    return;
-  }
-
-  const titlesRedeemed = await db.getRedeemedTitlesForProfile(req.params.profileId).then((data) => data.titles);
-
-  fetch(`https://www.bungie.net/Platform//Destiny2/${STEAM_MEMBERSHIP_ID}/Profile/${req.params.profileId}/?${components}`,
+  const components = 'components=100,102,200,201,202,205,300,700,800,900';
+  return fetch(`https://www.bungie.net/Platform//Destiny2/${STEAM_MEMBERSHIP_ID}/Profile/${profileId}/?${components}`,
     {
       method: 'GET',
       headers: {
@@ -141,23 +132,77 @@ app.get('/destiny/:profileId', async (req, res) => {
       titleDefinitions.forEach(title => {
         if (title.isRedeemable) titlesEarned.push(title.name);
       });
-      db.addTitlesForProfile(req.params.profileId, titlesEarned);
-
-      res.status(200).json({
-        'titleDefinitions': titleDefinitions,
-        'titlesRedeemed': titlesRedeemed
-      });
+      db.addTitlesForProfile(profileId, titlesEarned);
+      return titleDefinitions;
     });
+}
+
+app.get('/destiny/:profileId', async (req, res) => {
+  const accessToken = accessMap[req.params.profileId];
+
+  if (!accessToken) {
+    res.status(403).json({ 'errorMessage': 'Bad Auth' });
+    return;
+  }
+
+  const titlesRedeemed = db.getRedeemedTitlesForProfile(req.params.profileId).then((data) => data.titles);
+  const titleDefinitions = getDestinyData(req.params.profileId, accessToken);
+
+  res.status(200).json({
+    'titleDefinitions': await titleDefinitions,
+    'titlesRedeemed': await titlesRedeemed
+  });
+
 });
 
 app.get('/titles/:discordId', (req, res) => {
-  db.getTitlesForDiscordUser(req.params.discordId).then((data) => {
-    const statusCode = data.error ? 404 : 200;
-    res.status(statusCode).json({
-      'titles': data.titles,
-      'error': data.error
+  const discordId = req.params.discordId;
+  const clientId = process.env.CLIENT_ID;
+  const clientSecret = process.env.CLIENT_SECRET;
+  db.getRefreshTokenForDiscordUser(discordId)
+    .then((data) => {
+      const profileId = data.profileId;
+      if (data.token && profileId) {
+        fetch('https://www.bungie.net/platform/app/oauth/token/',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `grant_type=refresh_token&refresh_token=${data.token}&client_id=${clientId}&client_secret=${clientSecret}`
+          })
+          .then(response => response.json())
+          .then(data => {
+            const accessToken = data.access_token;
+            if (accessToken) {
+              getDestinyData(profileId, accessToken).then(() => {
+                db.getTitlesForDiscordUser(req.params.discordId).then((data) => {
+                  const statusCode = data.error ? 404 : 200;
+                  res.status(statusCode).json({
+                    'titles': data.titles,
+                    'error': data.error
+                  });
+                  if (data.error) {
+                    throw data.error;
+                  }
+                });
+              });
+            }
+            else {
+              throw `discord user ${discordId} failed to refresh token`
+            }
+          })
+          .catch((error) => {
+            console.log(`Error: ${error}`);
+          });
+      }
+      else {
+        throw `discord user ${discordId} does not have a refresh token`;
+      }
+    })
+    .catch((error) => {
+      console.log(`Error: ${error}`);
     });
-  });
 });
 
 app.get('/db/:profileId/', (req, res) => {
