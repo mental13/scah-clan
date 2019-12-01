@@ -83,7 +83,11 @@ app.get('/oauth/redirect', (req, res) => {
           if (bnetMembership) {
             const profileId = bnetMembership.membershipId;
             accessMap[profileId] = accessToken;
-            db.linkDiscordForProfile(profileId, discordId)
+
+            if (discordId) {
+              db.linkDiscordForProfile(profileId, discordId)
+            }
+
             res.redirect(`${REACT_APP_URL}/profile/${profileId}`);
           }
         })
