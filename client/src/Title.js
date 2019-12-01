@@ -17,6 +17,7 @@ class Title extends React.Component {
             <li key={triumph.name + index.toString()} className='TriumphListItem'>
             <Triumph
               name={triumph.name}
+              isComplete={triumph.isComplete}
               iconPath={triumph.icon}
               description={triumph.description}
               objectives={triumph.objectives}

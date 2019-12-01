@@ -6,7 +6,7 @@ import Objective from './Objective.js'
 class Triumph extends React.Component {
   render() {
     return (
-      <div className='Triumph'>
+      <div className='Triumph' completed={this.props.isComplete.toString()}>
         <div className='InfoContainer'>
           <div className='Icon'><img src={this.props.iconPath} alt='' /></div>
           <div className='Name'><b>{this.props.name}</b></div>

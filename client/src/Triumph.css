@@ -1,10 +1,31 @@
 .Triumph {
   display: flex;
+  position: relative;
   flex-direction: column;
   background-color: darkgrey;
   min-width: 400px;
   max-width: 400px;
   box-shadow: inset 0 0 0 2px white;
+}
+
+.Triumph[completed="true"] {
+  box-shadow: inset 0 0 0 2px gold;
+}
+
+.Triumph::before {
+  content: ' ';
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  opacity: 0.0;
+  z-index: 1;
+}
+
+.Triumph[completed="true"]::before {
+  background-color: gold;
+  opacity: 0.1;
 }
 
 .InfoContainer {
@@ -40,6 +61,10 @@
   padding: 8px 0 0 8px;
   margin: 0 8px 0 0;
   border-top: 1px solid white;
+}
+
+.Triumph[completed="true"] .InfoContainer .Description {
+  border-top: 1px solid gold;
 }
 
 .ObjectiveContainer {
