@@ -5,6 +5,7 @@ const profileSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
+  token: String,
   discordId: String,
   earnedTitles: [String],
   redeemedTitles: [String]
@@ -32,6 +33,14 @@ exports.connect = function () {
   mongoose.connection.on('disconnected', () => {
     dbConnected = false;
   });
+}
+
+exports.storeTokenForProfile = function (profileID, token) {
+  if (dbConnected) {
+    Profile.findOneAndUpdate({ id: profileID }, { token: token }, { upsert: true }, (err, data) => {
+      if (err) console.error(err);
+    });
+  }
 }
 
 exports.linkDiscordForProfile = function (profileID, discordId) {

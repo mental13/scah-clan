@@ -59,17 +59,19 @@ app.get('/oauth/redirect', (req, res) => {
   const reqCode = req.query.code;
   const discordId = req.query.state;
   const clientId = process.env.CLIENT_ID;
+  const clientSecret = process.env.CLIENT_SECRET;
   fetch('https://www.bungie.net/platform/app/oauth/token/',
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: `grant_type=authorization_code&code=${reqCode}&client_id=${clientId}`
+      body: `grant_type=authorization_code&code=${reqCode}&client_id=${clientId}&client_secret=${clientSecret}`
     })
     .then(response => response.json())
     .then(data => {
       const accessToken = data.access_token;
+      const refreshToken = data.refresh_token;
       fetch(`https://www.bungie.net/Platform/User/GetMembershipsById/${data.membership_id}/254/`,
         { method: 'GET', headers: { 'x-api-key': process.env.BUNGIE_API_KEY } })
         .then(response => response.json())
@@ -84,6 +86,9 @@ app.get('/oauth/redirect', (req, res) => {
             const profileId = bnetMembership.membershipId;
             accessMap[profileId] = accessToken;
 
+            if (refreshToken) {
+              db.storeTokenForProfile(profileId, refreshToken)
+            }
             if (discordId) {
               db.linkDiscordForProfile(profileId, discordId)
             }
