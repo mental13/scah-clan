@@ -330,7 +330,7 @@ function parseCrucible(destinyData) {
 
   const ritualsObjective = {
     hint: 'Triumph completed',
-    isComplete: destinyData.profileRecords.data.records[2737832720].state & RecordStatus.COMPLETED,
+    isComplete: destinyData.profileRecords.data.records[2737832720].state & RecordStatus.COMPLETED ? true : false,
     curValue: destinyData.profileRecords.data.records[2737832720].state & RecordStatus.COMPLETED ? 1 : 0,
     reqValue: 1
   }
@@ -420,7 +420,7 @@ function parseGambit(destinyData) {
 
   const ritualsObjective = {
     hint: 'Triumph completed',
-    isComplete: destinyData.profileRecords.data.records[3388126667].state & RecordStatus.COMPLETED,
+    isComplete: destinyData.profileRecords.data.records[3388126667].state & RecordStatus.COMPLETED ? true : false,
     curValue: destinyData.profileRecords.data.records[3388126667].state & RecordStatus.COMPLETED ? 1 : 0,
     reqValue: 1
   }
@@ -502,7 +502,7 @@ function parseVanguard(destinyData) {
 
   const masterNFObjective = {
     hint: 'Master NF completed',
-    isComplete: destinyData.profileRecords.data.records[3495463203].state & RecordStatus.COMPLETED,
+    isComplete: destinyData.profileRecords.data.records[3495463203].state & RecordStatus.COMPLETED ? true : false,
     curValue: destinyData.profileRecords.data.records[3495463203].state & RecordStatus.COMPLETED ? 1 : 0,
     reqValue: 1
   }
@@ -543,7 +543,7 @@ function parseVanguard(destinyData) {
       name: 'Nightfalls',
       description: 'Achieve a high Nightfall rank and complete Nightfall: The Ordeal on Master difficulty',
       icon: 'https://www.bungie.net/common/destiny2_content/icons/1538509805dda202c0d14771fe4f6d20.png',
-      isComplete: rankObjective.isComplete,
+      isComplete: rankObjective.isComplete && masterNFObjective.isComplete,
       objectives: [
         rankObjective,
         masterNFObjective
