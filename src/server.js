@@ -57,10 +57,10 @@ app.get('/oauth/redirect', (req, res) => {
       accessMap[profileId] = accessToken;
 
       if (refreshToken) {
-        db.storeTokenForProfile(profileId, refreshToken)
+        db.addDataToProfile(profileId, { token: refreshToken });
       }
       if (discordId) {
-        db.linkDiscordForProfile(profileId, discordId)
+        db.addDataToProfile(profileId, { discordId: discordId });
       }
 
       res.redirect(`${REACT_APP_URL}/profile/${profileId}`);
@@ -76,23 +76,24 @@ app.get('/destiny/:profileId', async (req, res) => {
 
   const titleDefinitions = destiny.getProfileData(profileId, accessToken)
     .then(titleDefinitions => {
-      const titlesEarned = [];
+      const earnedTitles = [];
       titleDefinitions.forEach(title => {
-        if (title.isRedeemable) titlesEarned.push(title.name);
+        if (title.isRedeemable) earnedTitles.push(title.name);
       });
-      db.addTitlesForProfile(profileId, titlesEarned);
+      db.addDataToProfile(profileId, { $addToSet: { earnedTitles: earnedTitles } });
       return titleDefinitions
     });
 
-  const titlesRedeemed = db.getRedeemedTitlesForProfile(profileId)
-    .then((data) => data.titles);
+  const titlesRedeemed = db.getDataByProfileId(profileId)
+    .then((data) => data ? data.redeemedTitles : []);
 
-  Promise.all([titleDefinitions, titlesRedeemed]).then(data => {
-    res.status(200).json({
-      'titleDefinitions': data[0],
-      'titlesRedeemed': data[1]
-    });
-  })
+  Promise.all([titleDefinitions, titlesRedeemed])
+    .then(data => {
+      res.status(200).json({
+        'titleDefinitions': data[0],
+        'titlesRedeemed': data[1]
+      });
+    })
     .catch(error => {
       res.status(400).json({ 'errorMessage': error.message });
     });
@@ -101,47 +102,36 @@ app.get('/destiny/:profileId', async (req, res) => {
 app.get('/titles/:discordId', (req, res) => {
   const discordId = req.params.discordId;
   var profileId;
-  db.getRefreshTokenForDiscordUser(discordId)
-    .then((data) => {
-      profileId = data.profileId;
+
+  db.getDataByDiscordId(discordId)
+    .then(data => {
+      profileId = data.id;
       return destiny.refreshAuthToken(data.token);
     })
-    .then(accessToken => {
-        return destiny.getProfileData(profileId, accessToken);
+    .then(newAccessToken => {
+      return destiny.getProfileData(profileId, newAccessToken);
     })
     .then(titleDefinitions => {
-      const titlesEarned = [];
+      const earnedTitles = [];
       titleDefinitions.forEach(title => {
-        if (title.isRedeemable) titlesEarned.push(title.name);
+        if (title.isRedeemable) earnedTitles.push(title.name);
       });
-      db.addTitlesForProfile(profileId, titlesEarned);
-
-      db.getTitlesForDiscordUser(req.params.discordId).then((data) => {
-        const statusCode = data.error ? 404 : 200;
-        res.status(statusCode).json({
-          'titles': data.titles,
-          'error': data.error
-        });
-        if (data.error) {
-          throw data.error;
-        }
+      return db.addDataToProfile(profileId, { $addToSet: { earnedTitles: earnedTitles } });
+    })
+    .then(updatedEntry => {
+      res.status(200).json({
+        'titles': updatedEntry.earnedTitles,
       });
     })
     .catch((error) => {
-      console.log(`Error: ${error}`);
+      res.status(400).json({
+        'error': error.message,
+      });
     });
-});
-
-app.get('/db/:profileId/', (req, res) => {
-  db.getRedeemedTitlesForProfile(req.params.profileId).then((data) => {
-    res.status(200).json({
-      'titlesRedeemed': data.titles
-    });
-  });
 });
 
 app.post('/db/:profileId/:title', (req, res) => {
-  db.redeemTitleForProfile(req.params.profileId, req.params.title);
+  db.addDataToProfile(req.params.profileId, { $addToSet: { redeemedTitles: [req.params.title] } });
   res.status(200).end();
 });
 

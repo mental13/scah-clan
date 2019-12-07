@@ -5,8 +5,11 @@ const profileSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
+  discordId: {
+    type: String,
+    unique: true,
+  },
   token: String,
-  discordId: String,
   earnedTitles: [String],
   redeemedTitles: [String]
 })
@@ -35,105 +38,37 @@ exports.connect = function () {
   });
 }
 
-exports.storeTokenForProfile = function (profileID, token) {
-  if (dbConnected) {
-    Profile.findOneAndUpdate({ id: profileID }, { token: token }, { upsert: true }, (err, data) => {
-      if (err) console.error(err);
+exports.getDataByProfileId = async function (profileId) {
+  if (!dbConnected) return;
+
+  return Profile.findOne({ id: profileId })
+    .then(data => {
+      if (!data) throw `No entry with profile ID: ${profileId}`;
+      return data;
+    })
+    .catch(errorMessage => {
+      throw new Error(errorMessage);
     });
-  }
 }
 
-exports.linkDiscordForProfile = function (profileID, discordId) {
-  if (dbConnected) {
-    Profile.findOneAndUpdate({ id: profileID }, { discordId: discordId }, { upsert: true }, (err, data) => {
-      if (err) console.error(err);
+exports.getDataByDiscordId = async function (discordId) {
+  if (!dbConnected) return;
+
+  return Profile.findOne({ discordId: discordId })
+    .then(data => {
+      if (!data) throw `No entry with discord ID: ${discordId}`;
+      return data;
+    })
+    .catch(errorMessage => {
+      throw new Error(errorMessage);
     });
-  }
 }
 
-exports.addTitlesForProfile = function (profileID, titles, redeem = false) {
-  if (dbConnected) {
-    const update = redeem ? { $addToSet: { redeemedTitles: titles } } : { $addToSet: { earnedTitles: titles } };
-    Profile.findOneAndUpdate({ id: profileID }, update, { upsert: true }, (err, data) => {
-      if (err) console.error(err);
+exports.addDataToProfile = async function (profileId, updateQuery) {
+  if (!dbConnected) return;
+
+  return Profile.findOneAndUpdate({ id: profileId }, updateQuery, { upsert: true, new: true })
+    .catch(errorMessage => {
+      throw new Error(errorMessage);
     });
-  }
-}
-
-exports.redeemTitleForProfile = function (profileID, title) {
-  exports.addTitlesForProfile(profileID, [title], true);
-}
-
-async function getTitlesForProfile(profileID, redeemed = false) {
-  var titles = [];
-  if (dbConnected) {
-    try {
-      await Profile.findOne({ id: profileID }, redeemed ? 'redeemedTitles' : 'earnedTitles', (err, data) => {
-        if (err) throw err;
-        titles = data ? (redeemed ? data.redeemedTitles : data.earnedTitles) : [];
-      });
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
-  return new Promise(resolve => {
-    resolve({ titles: titles });
-  });
-}
-
-exports.getRedeemedTitlesForProfile = async function (profileID) {
-  return getTitlesForProfile(profileID, true);
-}
-
-async function getLinkedProfile(discordId) {
-  var profileId;
-  if (dbConnected) {
-    try {
-      await Profile.findOne({ discordId: discordId }, 'id', (err, data) => {
-        if (err) throw err;
-        profileId = data ? data.id : null;
-      });
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
-  return new Promise(resolve => {
-    resolve({ id: profileId });
-  });
-}
-
-exports.getTitlesForDiscordUser = async function (discordId) {
-  const linkedProfile = await getLinkedProfile(discordId);
-  if (!linkedProfile.id) {
-    return new Promise(resolve => {
-      resolve({ error: 'This discord ID has no linked profile' });
-    });
-  }
-
-  return getTitlesForProfile(linkedProfile.id);
-}
-
-exports.getRefreshTokenForDiscordUser = async function (discordId) {
-  var profileId;
-  var refreshToken;
-  if (dbConnected) {
-    try {
-      await Profile.findOne({ discordId: discordId }, 'id token', (err, data) => {
-        if (err) throw err;
-        profileId = data ? data.id : null;
-        refreshToken = data ? data.token : null;
-      });
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
-  return new Promise(resolve => {
-    resolve({
-      profileId: profileId,
-      token: refreshToken
-    });
-  });
 }
