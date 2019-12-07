@@ -41,6 +41,43 @@ app.get('/register/', (req, res) => {
   res.redirect(destiny.getOauthURL() + stateParam);
 });
 
+app.get('/check-register/:discordId', (req, res) => {
+  const discordId = req.params.discordId;
+
+  db.getDataByDiscordId(discordId)
+    .then(data => {
+      res.status(200).json({
+        'registered': true,
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        'registered': false,
+        'error': error.message,
+      });
+    });
+});
+
+app.post('/unregister/:discordId', (req, res) => {
+  const discordId = req.params.discordId;
+
+  db.getDataByDiscordId(discordId)
+    .then(data => {
+      return db.addDataToProfile(data.id, { discordId: null });
+    })
+    .then((updatedEntry) => {
+      if (updatedEntry.discordId) {
+        throw new Error('Failed to unlink discord from profile');
+      }
+      res.status(200).end();
+    })
+    .catch((error) => {
+      res.status(400).json({
+        'error': error.message,
+      });
+    });
+});
+
 app.get('/oauth/redirect', (req, res) => {
   const authCode = req.query.code;
   const discordId = req.query.state;
