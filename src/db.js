@@ -63,10 +63,10 @@ exports.getDataByDiscordId = async function (discordId) {
     });
 }
 
-exports.getAllRegisteredUsers = async function () {
+exports.getAllUsersWithKey = async function (key) {
   if (!dbConnected) return;
 
-  return Profile.find({ discordId: { $ne: null } })
+  return Profile.find({ [key]: { $ne: null } })
     .then(data => {
       if (!data || data.length == 0) throw `No registered users in DB`;
       return data;

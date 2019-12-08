@@ -26,7 +26,7 @@ async function updateDataForUser(user) {
 
 db.connect()
   .then(() => {
-    return db.getAllRegisteredUsers();
+    return db.getAllUsersWithKey('discordId');
   })
   .then(users => {
     users.forEach(user => {

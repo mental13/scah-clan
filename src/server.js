@@ -171,7 +171,7 @@ app.get('/sync/:discordId', (req, res) => {
 
 app.get('/sync', (req, res) => {
   var usersToSync = [];
-  db.getAllRegisteredUsers()
+  db.getAllUsersWithKey('discordId')
     .then(users => {
       users.forEach(user => {
         usersToSync.push({
@@ -187,6 +187,36 @@ app.get('/sync', (req, res) => {
       res.status(400).json({
         'error': error.message,
       });
+    });
+});
+
+app.post('/reset/:secret', (req, res) => {
+  const secret = process.env.RESET_SECRET;
+  const reqSecret = req.params.secret;
+
+  if (!secret || !reqSecret) {
+    console.log('Command unavailable: no reset secret provided');
+    res.status(400).end();
+    return;
+  }
+
+  if (secret != reqSecret) {
+    console.log('Command failed: secrets do not match');
+    res.status(400).end();
+    return;
+  }
+
+  db.getAllUsersWithKey('id')
+    .then(users => {
+      users.forEach(user => {
+        db.addDataToProfile(user.id, { $set: { earnedTitles: [] } });
+        db.addDataToProfile(user.id, { $set: { redeemedTitles: [] } });
+        res.status(200).end();
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(400).end();
     });
 });
 
