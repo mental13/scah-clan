@@ -14,14 +14,14 @@ const profileSchema = new mongoose.Schema({
 const Profile = mongoose.model('Profile', profileSchema);
 
 var dbConnected = false;
-exports.connect = function () {
-  mongoose.connect(process.env.MONGODB_URI, {
+exports.connect = async function () {
+  const connectPromise = mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useFindAndModify: false,
     useCreateIndex: true,
     useUnifiedTopology: true
-  }).catch(err => {
-    console.error(`DB error: ${err}`);
+  }).catch(error => {
+    throw error;
   });
 
   mongoose.connection.on('connected', () => {
@@ -33,6 +33,8 @@ exports.connect = function () {
   mongoose.connection.on('disconnected', () => {
     dbConnected = false;
   });
+
+  return connectPromise;
 }
 
 exports.getDataByProfileId = async function (profileId) {

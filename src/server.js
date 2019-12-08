@@ -6,7 +6,10 @@ const dotenv = require('dotenv').config();
 const destiny = require('./destiny-api');
 
 const db = require('./db');
-db.connect();
+db.connect()
+  .catch(error => {
+    console.error(error);
+  });
 
 const app = express();
 const port = process.env.PORT || '8000';
