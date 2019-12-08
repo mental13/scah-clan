@@ -5,10 +5,7 @@ const profileSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  discordId: {
-    type: String,
-    unique: true,
-  },
+  discordId: String,
   token: String,
   earnedTitles: [String],
   redeemedTitles: [String]
@@ -57,6 +54,19 @@ exports.getDataByDiscordId = async function (discordId) {
   return Profile.findOne({ discordId: discordId })
     .then(data => {
       if (!data) throw `No entry with discord ID: ${discordId}`;
+      return data;
+    })
+    .catch(errorMessage => {
+      throw new Error(errorMessage);
+    });
+}
+
+exports.getAllRegisteredUsers = async function () {
+  if (!dbConnected) return;
+
+  return Profile.find({ discordId: { $ne: null } })
+    .then(data => {
+      if (!data || data.length == 0) throw `No registered users in DB`;
       return data;
     })
     .catch(errorMessage => {

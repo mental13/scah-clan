@@ -136,10 +136,9 @@ app.get('/destiny/:profileId', async (req, res) => {
     });
 });
 
-app.get('/titles/:discordId', (req, res) => {
+app.get('/sync/:discordId', (req, res) => {
   const discordId = req.params.discordId;
   var profileId;
-
   db.getDataByDiscordId(discordId)
     .then(data => {
       profileId = data.id;
@@ -158,6 +157,27 @@ app.get('/titles/:discordId', (req, res) => {
     .then(updatedEntry => {
       res.status(200).json({
         'titles': updatedEntry.earnedTitles,
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        'error': error.message,
+      });
+    });
+});
+
+app.get('/sync', (req, res) => {
+  var usersToSync = [];
+  db.getAllRegisteredUsers()
+    .then(users => {
+      users.forEach(user => {
+        usersToSync.push({
+          discordId: user.discordId,
+          earnedTitles: user.earnedTitles
+        });
+      });
+      res.status(200).json({
+        'data': usersToSync
       });
     })
     .catch((error) => {
