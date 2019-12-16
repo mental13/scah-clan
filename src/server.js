@@ -142,9 +142,19 @@ app.get('/destiny/:profileId', async (req, res) => {
 app.get('/sync/:discordId', (req, res) => {
   const discordId = req.params.discordId;
   var profileId;
+
+  // don't allow consecutive requests and reject them if a certain ammount of time did not pass
+  const updateTime = Math.round(new Date().getTime() / 1000);
+  const timeoutTime = 60;
+
   db.getDataByDiscordId(discordId)
     .then(data => {
+      if (data.lastUpdate && updateTime - data.lastUpdate < timeoutTime) {
+        throw new Error('Update was performed recently. Please try again later');
+      }
+
       profileId = data.id;
+      db.addDataToProfile(profileId, { lastUpdate: updateTime });
       return destiny.refreshAuthToken(data.token);
     })
     .then(newAccessToken => {

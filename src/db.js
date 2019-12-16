@@ -8,7 +8,8 @@ const profileSchema = new mongoose.Schema({
   discordId: String,
   token: String,
   earnedTitles: [String],
-  redeemedTitles: [String]
+  redeemedTitles: [String],
+  lastUpdate: Number
 })
 
 const Profile = mongoose.model('Profile', profileSchema);
