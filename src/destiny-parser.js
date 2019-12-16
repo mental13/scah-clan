@@ -32,12 +32,12 @@ const CollectibleStatus = {
 
 exports.getTitleDefinitions = async function (destinyData) {
   const profilePower = await calculateProfilePower(destinyData);
-  let [maxedTitle, ascendantTitle, pinacleTitle] = parsePower(profilePower);
+  let [maxedTitle, ascendantTitle, pinnacleTitle] = parsePower(profilePower);
 
   let titleDefinitions = [];
   titleDefinitions.push(maxedTitle);
   titleDefinitions.push(ascendantTitle);
-  titleDefinitions.push(pinacleTitle);
+  titleDefinitions.push(pinnacleTitle);
   titleDefinitions.push(parseTriumphs(destinyData));
   titleDefinitions.push(parseSeals(destinyData));
   titleDefinitions.push(parseRaid(destinyData));
@@ -65,7 +65,7 @@ async function calculateProfilePower(destinyData) {
 
 function parsePower(profilePower) {
   const POWER_REQ = 960;
-  const PINACLE_POWER = 10;
+  const PINNACLE_POWER = 10;
 
   const powerObjective = {
     hint: 'Power',
@@ -109,7 +109,7 @@ function parsePower(profilePower) {
 
   const ascendantTriumphs = [
     {
-      name: 'Power',
+      name: 'Warlock',
       description: `Achieve a gear Light Level of ${POWER_REQ} on a Warlock`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/08abe62a2664be8c3239e23a80dfea9d.png',
       isComplete: warlockObjective.isComplete,
@@ -118,7 +118,7 @@ function parsePower(profilePower) {
       ]
     },
     {
-      name: 'Power',
+      name: 'Titan',
       description: `Achieve a gear Light Level of ${POWER_REQ} on a Titan`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/e78f012b19b5f6c6026c12547895b756.png',
       isComplete: titanObjective.isComplete,
@@ -127,7 +127,7 @@ function parsePower(profilePower) {
       ]
     },
     {
-      name: 'Power',
+      name: 'Hunter',
       description: `Achieve a gear Light Level of ${POWER_REQ} on a Hunter`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/bfe570eef316e3893589a152af716479.png',
       isComplete: hunterObjective.isComplete,
@@ -137,21 +137,21 @@ function parsePower(profilePower) {
     }
   ];
 
-  const pinacleObjective = {
+  const pinnacleObjective = {
     hint: 'Power',
-    isComplete: Object.values(profilePower).some(power => power >= POWER_REQ + PINACLE_POWER),
-    curValue: Math.max.apply(Math, Object.values(profilePower)),
-    reqValue: POWER_REQ + PINACLE_POWER
+    isComplete: Object.values(profilePower).some(power => power >= POWER_REQ + PINNACLE_POWER),
+    curValue: Math.max(0, Math.max.apply(Math, Object.values(profilePower)) - POWER_REQ),
+    reqValue: PINNACLE_POWER
   };
 
-  const pinacleTriumphs = [
+  const pinnacleTriumphs = [
     {
-      name: 'Power',
-      description: `Achieve a gear Light Level of ${POWER_REQ + PINACLE_POWER}`,
+      name: 'Pinnacle Power',
+      description: `Achieve max pinnacle Light Level`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/6928d6394c2a079426c53fae98c14591.png',
-      isComplete: pinacleObjective.isComplete,
+      isComplete: pinnacleObjective.isComplete,
       objectives: [
-        pinacleObjective
+        pinnacleObjective
       ]
     }
   ];
@@ -172,8 +172,8 @@ function parsePower(profilePower) {
     {
       name: 'Prodigy of Saint XIV',
       color: '#2E806A',
-      isRedeemable: pinacleTriumphs.every((triumph) => triumph.isComplete == true),
-      triumphs: pinacleTriumphs
+      isRedeemable: pinnacleTriumphs.every((triumph) => triumph.isComplete == true),
+      triumphs: pinnacleTriumphs
     }
   ]
 }
