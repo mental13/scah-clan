@@ -32,11 +32,12 @@ const CollectibleStatus = {
 
 exports.getTitleDefinitions = async function (destinyData) {
   const profilePower = await calculateProfilePower(destinyData);
-  let [maxedTitle, ascendantTitle] = parsePower(profilePower);
+  let [maxedTitle, ascendantTitle, pinacleTitle] = parsePower(profilePower);
 
   let titleDefinitions = [];
   titleDefinitions.push(maxedTitle);
   titleDefinitions.push(ascendantTitle);
+  titleDefinitions.push(pinacleTitle);
   titleDefinitions.push(parseTriumphs(destinyData));
   titleDefinitions.push(parseSeals(destinyData));
   titleDefinitions.push(parseRaid(destinyData));
@@ -63,7 +64,8 @@ async function calculateProfilePower(destinyData) {
 }
 
 function parsePower(profilePower) {
-  const POWER_REQ = 950;
+  const POWER_REQ = 960;
+  const PINACLE_POWER = 10;
 
   const powerObjective = {
     hint: 'Power',
@@ -135,6 +137,25 @@ function parsePower(profilePower) {
     }
   ];
 
+  const pinacleObjective = {
+    hint: 'Power',
+    isComplete: Object.values(profilePower).some(power => power >= POWER_REQ + PINACLE_POWER),
+    curValue: Math.max.apply(Math, Object.values(profilePower)),
+    reqValue: POWER_REQ + PINACLE_POWER
+  };
+
+  const pinacleTriumphs = [
+    {
+      name: 'Power',
+      description: `Achieve a gear Light Level of ${POWER_REQ + PINACLE_POWER}`,
+      icon: 'https://www.bungie.net/common/destiny2_content/icons/6928d6394c2a079426c53fae98c14591.png',
+      isComplete: pinacleObjective.isComplete,
+      objectives: [
+        pinacleObjective
+      ]
+    }
+  ];
+
   return [
     {
       name: 'Maxed',
@@ -147,12 +168,18 @@ function parsePower(profilePower) {
       color: '#85FF10',
       isRedeemable: ascendantTriumphs.every((triumph) => triumph.isComplete == true),
       triumphs: ascendantTriumphs
+    },
+    {
+      name: 'Prodigy of Saint XIV',
+      color: '#2E806A',
+      isRedeemable: pinacleTriumphs.every((triumph) => triumph.isComplete == true),
+      triumphs: pinacleTriumphs
     }
   ]
 }
 
 function parseTriumphs(destinyData) {
-  const TRIUMPH_POINTS_REQ = 95000;
+  const TRIUMPH_POINTS_REQ = 100000;
   const scoreObjective = {
     hint: 'Score',
     isComplete: destinyData.profileRecords.data.score >= TRIUMPH_POINTS_REQ,
@@ -185,6 +212,7 @@ function parseSeals(destinyData) {
     2209950401, // Harbinger
     4097789885, // Enlightened
     3303651244, // Undying
+    3303651245, // Savior
   ];
 
   let sealsCompleted = 0;
@@ -196,7 +224,7 @@ function parseSeals(destinyData) {
     }
   });
 
-  const SEALS_REQ = 2;
+  const SEALS_REQ = 3;
   const sealObjective = {
     hint: 'Titles unlocked',
     isComplete: sealsCompleted >= SEALS_REQ,
@@ -226,8 +254,8 @@ function parseSeals(destinyData) {
 
 function parseRaid(destinyData) {
 
-  const OLD_RAID_COMPLETIONS_REQ = 20;
-  const NEW_RAID_COMPLETIONS_REQ = 10;
+  const OLD_RAID_COMPLETIONS_REQ = 25;
+  const NEW_RAID_COMPLETIONS_REQ = 20;
 
   // Last Wish
   const lwCompleteObjective = {
@@ -323,20 +351,20 @@ function parseCrucible(destinyData) {
 
   const pursuitObjective = {
     hint: 'Pursuit completed',
-    isComplete: isCollectibleAquired(destinyData, 1539334774),
-    curValue: isCollectibleAquired(destinyData, 1539334774) ? 1 : 0,
+    isComplete: isCollectibleAquired(destinyData, 2278689936),
+    curValue: isCollectibleAquired(destinyData, 2278689936) ? 1 : 0,
     reqValue: 1
   }
 
-  const ritualsObjective = {
+  const triumphObjective = {
     hint: 'Triumph completed',
-    isComplete: destinyData.profileRecords.data.records[2737832720].state & RecordStatus.COMPLETED ? true : false,
-    curValue: destinyData.profileRecords.data.records[2737832720].state & RecordStatus.COMPLETED ? 1 : 0,
+    isComplete: destinyData.profileRecords.data.records[3709680455].state & RecordStatus.COMPLETED ? true : false,
+    curValue: destinyData.profileRecords.data.records[3709680455].state & RecordStatus.COMPLETED ? 1 : 0,
     reqValue: 1
   }
 
   const ritualWeaponIds = [
-    1303705556, // Randy's Throwing Knife
+    4116184726, // Komodo-4FR
   ];
 
   let ritualWeaponAquired = 0;
@@ -353,8 +381,8 @@ function parseCrucible(destinyData) {
     reqValue: RITUAL_WEAPONS_REQ,
     collectionProgress: [
       {
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/a9703364b9d49635eb08cc75d5cd8277.jpg',
-        isAquired: isCollectibleAquired(destinyData, 1303705556)
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/288ba1dfbb23f90fcc6af65899d5923c.jpg',
+        isAquired: isCollectibleAquired(destinyData, 4116184726)
       },
     ]
   };
@@ -362,7 +390,7 @@ function parseCrucible(destinyData) {
   const triumphs = [
     {
       name: 'Valor Rank',
-      description: 'Reset your Valor Rank 3 times in the active season',
+      description: `Reset your Valor Rank ${RESETS_REQ} times in the active season`,
       icon: 'https://www.bungie.net/common/destiny2_content/icons/cc8e6eea2300a1e27832d52e9453a227.png',
       isComplete: resetObjective.isComplete,
       objectives: [
@@ -371,12 +399,12 @@ function parseCrucible(destinyData) {
     },
     {
       name: 'Pursuit',
-      description: 'Complete the Season 8: Battle Drills pursuit and the Season 8: Challenges triumph',
+      description: 'Complete the Season Pursuit and the Season Challenges triumph',
       icon: 'https://www.bungie.net/common/destiny2_content/icons/cc8e6eea2300a1e27832d52e9453a227.png',
-      isComplete: pursuitObjective.isComplete && ritualsObjective.isComplete,
+      isComplete: pursuitObjective.isComplete && triumphObjective.isComplete,
       objectives: [
         pursuitObjective,
-        ritualsObjective
+        triumphObjective
       ]
     },
     {
@@ -413,20 +441,20 @@ function parseGambit(destinyData) {
 
   const pursuitObjective = {
     hint: 'Pursuit completed',
-    isComplete: isCollectibleAquired(destinyData, 971966216),
-    curValue: isCollectibleAquired(destinyData, 971966216) ? 1 : 0,
+    isComplete: isCollectibleAquired(destinyData, 2278689943),
+    curValue: isCollectibleAquired(destinyData, 2278689943) ? 1 : 0,
     reqValue: 1
   }
 
-  const ritualsObjective = {
+  const triumhObjective = {
     hint: 'Triumph completed',
-    isComplete: destinyData.profileRecords.data.records[3388126667].state & RecordStatus.COMPLETED ? true : false,
-    curValue: destinyData.profileRecords.data.records[3388126667].state & RecordStatus.COMPLETED ? 1 : 0,
+    isComplete: destinyData.profileRecords.data.records[1850469012].state & RecordStatus.COMPLETED ? true : false,
+    curValue: destinyData.profileRecords.data.records[1850469012].state & RecordStatus.COMPLETED ? 1 : 0,
     reqValue: 1
   }
 
   const ritualWeaponIds = [
-    1510655351, // Exit Strategy
+    3972149937, // Python
   ];
 
   let ritualWeaponAquired = 0;
@@ -443,8 +471,8 @@ function parseGambit(destinyData) {
     reqValue: RITUAL_WEAPONS_REQ,
     collectionProgress: [
       {
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/b7965908f517f6dfd59bf173cad3afd1.jpg',
-        isAquired: isCollectibleAquired(destinyData, 1510655351)
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/6df287db633feb11671b6b28f7f4136b.jpg',
+        isAquired: isCollectibleAquired(destinyData, 3972149937)
       },
     ]
   };
@@ -461,12 +489,12 @@ function parseGambit(destinyData) {
     },
     {
       name: 'Pursuit',
-      description: 'Complete the Season 8: Keepin On pursuit and the Season 8: Rituals triumph',
+      description: 'Complete the Season Pursuit and the Season Rituals triumph',
       icon: 'https://www.bungie.net/common/destiny2_content/icons/fc31e8ede7cc15908d6e2dfac25d78ff.png',
-      isComplete: pursuitObjective.isComplete && ritualsObjective.isComplete,
+      isComplete: pursuitObjective.isComplete && triumhObjective.isComplete,
       objectives: [
         pursuitObjective,
-        ritualsObjective
+        triumhObjective
       ]
     },
     {
@@ -493,11 +521,12 @@ function parseVanguard(destinyData) {
   const charId = destinyData.profile.data.characterIds[0];
   const nfRank = destinyData.characterProgressions.data[charId].progressions[nfId].level;
 
+  const NF_RANK_REQ = 25;
   const rankObjective = {
     hint: 'Rank',
-    isComplete: nfRank >= 20,
+    isComplete: nfRank >= NF_RANK_REQ,
     curValue: nfRank,
-    reqValue: 20
+    reqValue: NF_RANK_REQ
   };
 
   const masterNFObjective = {
@@ -509,13 +538,20 @@ function parseVanguard(destinyData) {
 
   const pursuitObjective = {
     hint: 'Pursuit completed',
-    isComplete: isCollectibleAquired(destinyData, 1904194019),
-    curValue: isCollectibleAquired(destinyData, 1904194019) ? 1 : 0,
+    isComplete: isCollectibleAquired(destinyData, 3801053379),
+    curValue: isCollectibleAquired(destinyData, 3801053379) ? 1 : 0,
+    reqValue: 1
+  }
+
+  const triumhObjective = {
+    hint: 'Triumph completed',
+    isComplete: destinyData.profileRecords.data.records[1575271155].state & RecordStatus.COMPLETED ? true : false,
+    curValue: destinyData.profileRecords.data.records[1575271155].state & RecordStatus.COMPLETED ? 1 : 0,
     reqValue: 1
   }
 
   const ritualWeaponIds = [
-    853534062, // Edgewise
+    2011258732, // Buzzard
   ];
 
   let ritualWeaponAquired = 0;
@@ -532,8 +568,8 @@ function parseVanguard(destinyData) {
     reqValue: RITUAL_WEAPONS_REQ,
     collectionProgress: [
       {
-        icon: 'https://www.bungie.net/common/destiny2_content/icons/5bab29043c0a33f1d047377052be5f30.jpg',
-        isAquired: isCollectibleAquired(destinyData, 853534062)
+        icon: 'https://www.bungie.net/common/destiny2_content/icons/d4dac74856842880ad4bc382b80e8103.jpg',
+        isAquired: isCollectibleAquired(destinyData, 2011258732)
       },
     ]
   };
@@ -551,11 +587,12 @@ function parseVanguard(destinyData) {
     },
     {
       name: 'Pursuit',
-      description: 'Complete the Season 8: First Watch pursuit',
+      description: 'Complete the Season Pursuit and the Season Vanguard triumph',
       icon: 'https://www.bungie.net/common/destiny2_content/icons/1538509805dda202c0d14771fe4f6d20.png',
-      isComplete: pursuitObjective.isComplete,
+      isComplete: pursuitObjective.isComplete && triumhObjective.isComplete,
       objectives: [
-        pursuitObjective
+        pursuitObjective,
+        triumhObjective
       ]
     },
     {
